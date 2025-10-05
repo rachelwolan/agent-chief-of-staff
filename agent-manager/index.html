@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chief of Staff - Agent Manager</title>
+    <link rel="stylesheet" href="styles-new.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <span class="logo-text">Chief of Staff</span>
+                </div>
+                <p class="sidebar-subtitle">AI Agent Manager</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>Navigation</h3>
+                    <a href="/" class="nav-item active" onclick="showView('calendar'); return false;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Daily Briefing
+                    </a>
+                    <a href="#agents" class="nav-item" onclick="showView('agents'); return false;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        All Agents
+                    </a>
+                    <a href="#outputs" class="nav-item" onclick="showView('outputs'); return false;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Recent Outputs
+                    </a>
+                    <a href="#learn" class="nav-item" onclick="showView('learn'); return false;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Learn-it-all
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Filters</h3>
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <input type="checkbox" checked onchange="filterAgents('ready')">
+                            <span>Ready</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="checkbox" checked onchange="filterAgents('needs-config')">
+                            <span>Needs Config</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Statistics</h3>
+                    <div id="stats" class="stats-section">
+                        <div class="stat-item">
+                            <span class="stat-value" id="total-agents">0</span>
+                            <span class="stat-label">Total Agents</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="total-outputs">0</span>
+                            <span class="stat-label">Outputs</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-wrapper">
+
+                <!-- Calendar View (Default) -->
+                <div id="calendar-view" style="display: block;">
+                    <!-- Page Header -->
+                    <header class="content-header">
+                        <h1 id="dashboard-date">Today</h1>
+                    </header>
+
+                    <!-- Focus Section (3x5 Index Card) -->
+                    <section class="section" id="focus-section" style="margin-bottom: 30px;">
+                        <div class="section-header">
+                            <h2>Focus</h2>
+                        </div>
+                        <div id="index-card-container">
+                            <!-- Index card will be rendered here -->
+                        </div>
+                    </section>
+
+                    <!-- Next Up Section -->
+                    <section class="section" id="next-up-section" style="margin-bottom: 30px;">
+                        <div id="next-up-content">
+                            <!-- Next meeting focus will be loaded here -->
+                        </div>
+                    </section>
+
+                    <!-- Today's Schedule -->
+                    <section class="section" id="calendar-section">
+                        <div class="section-header">
+                            <h2>Today's Schedule</h2>
+                            <span class="badge" id="meeting-count">0 meetings</span>
+                        </div>
+                        <div id="calendar-content">
+                            <!-- Calendar will be loaded here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Agents View -->
+                <div id="agents-view" style="display: none;">
+                    <header class="content-header">
+                        <h1>Agent Dashboard</h1>
+                        <p class="header-description">Manage and run your AI agents</p>
+                    </header>
+
+                    <section class="section" id="agents-section">
+                        <div class="section-header">
+                            <h2>Available Agents</h2>
+                            <span class="badge" id="agent-count">0 agents</span>
+                        </div>
+                        <div id="agents-list" class="agents-grid">
+                            <!-- Agents will be loaded here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Outputs View -->
+                <div id="outputs-view" style="display: none;">
+                    <header class="content-header">
+                        <h1>Recent Outputs</h1>
+                        <p class="header-description">View agent execution results</p>
+                    </header>
+
+                    <section class="section" id="outputs-section">
+                        <div class="section-header">
+                            <h2>Recent Outputs</h2>
+                            <span class="badge" id="output-count">0 files</span>
+                        </div>
+                        <div id="outputs-list" class="outputs-grid">
+                            <!-- Outputs will be loaded here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Learn-it-all View -->
+                <div id="learn-view" style="display: none;">
+                    <header class="content-header">
+                        <h1 id="learn-date">Today</h1>
+                    </header>
+
+                    <section class="section">
+                        <div id="learn-content">
+                            <!-- Dossier will be loaded here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Team Calendar View -->
+                <div id="team-calendar-view" style="display: none;">
+                    <header class="content-header">
+                        <h1 id="team-dashboard-date">Team Calendars</h1>
+                    </header>
+
+                    <!-- Linda Section -->
+                    <section class="section" id="estaff-section">
+                        <div class="section-header">
+                            <h2>Linda</h2>
+                        </div>
+                        <div id="estaff-calendar" class="team-calendar-grid">
+                            <!-- Linda's calendar will be loaded here -->
+                        </div>
+                    </section>
+
+                    <!-- My Team Section -->
+                    <section class="section" id="myteam-section">
+                        <div class="section-header">
+                            <h2>My Team</h2>
+                        </div>
+                        <div id="myteam-calendar" class="team-calendar-grid">
+                            <!-- My team calendars will be loaded here -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+        <!-- Run Agent Modal -->
+        <div id="run-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Run Agent: <span id="agent-name"></span></h2>
+                <textarea id="agent-input" placeholder="Enter your input JSON here..." rows="10"></textarea>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn-primary" onclick="runAgent()">Run Agent</button>
+                </div>
+                <div id="run-output" class="run-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

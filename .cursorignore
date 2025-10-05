@@ -1,0 +1,14 @@
+# Hide runtime and generated directories from Cursor file explorer
+dist/
+logs/
+data/
+venv/
+node_modules/
+.git/
+
+# Hide build artifacts
+*.js.map
+*.d.ts
+
+# Hide OS files
+.DS_Store

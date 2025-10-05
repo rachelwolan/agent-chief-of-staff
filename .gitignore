@@ -1,10 +1,78 @@
-node_modules/
-dist/
+# Environment Variables and Secrets
 .env
 .env.local
-.wrangler/
+.env.*.local
+*.env
+
+# API Keys and Credentials
+*_api_key*
+*_secret*
+credentials.json
+
+# Generated/Compiled Files
+dist/
+build/
+*.d.ts
+
+# Exclude compiled JS from src/ but keep agent-manager source files
+src/**/*.js
+src/**/*.js.map
+
+# Logs and Runtime Data
+logs/
+data/
 *.log
-.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.output.json
+*.output.md
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Python Virtual Environment
+venv/
+*.pyc
+__pycache__/
+
+# Testing
 coverage/
-.turbo/
-*.tsbuildinfo
+.nyc_output
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+
+# OAuth Tokens (stored in user home directory)
+# ~/.config/claude/*.json
+
+# Keep Important Files
+!.env.example
+!tsconfig.json
+!package.json
+!package-lock.json
+!agent-manager/**/*.js
+!agent-manager/**/*.json

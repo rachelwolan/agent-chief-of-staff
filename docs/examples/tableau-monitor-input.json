@@ -1,0 +1,32 @@
+{
+  "dashboardUrl": "https://prod-useast-a.online.tableau.com/#/site/webflowanalytics/views/WIPConsolidatedDashboard/Scorecard?:iid=1",
+  "workbookName": "WIPConsolidatedDashboard",
+  "viewName": "Scorecard",
+  "metricsToTrack": [
+    {
+      "metricName": "Total Projects",
+      "worksheetName": "Scorecard",
+      "fieldName": "COUNT(Project ID)",
+      "thresholds": {
+        "critical": 10,
+        "warning": 20
+      }
+    },
+    {
+      "metricName": "Completion Rate",
+      "worksheetName": "Scorecard",
+      "fieldName": "AVG(Completion %)",
+      "thresholds": {
+        "critical": 0.5,
+        "warning": 0.7
+      }
+    },
+    {
+      "metricName": "Active Users",
+      "worksheetName": "Scorecard",
+      "fieldName": "COUNT(User ID)"
+    }
+  ],
+  "comparisonPeriod": "previous-run",
+  "alertChannels": ["log"]
+}
