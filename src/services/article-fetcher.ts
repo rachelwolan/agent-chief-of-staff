@@ -20,11 +20,19 @@ export class ArticleFetcherService {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
+      // Build headers with optional Substack authentication
+      const headers: Record<string, string> = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      };
+
+      // Add Substack authentication if URL is from Substack
+      if (url.includes('substack.com') && process.env.SUBSTACK_SESSION_COOKIE) {
+        headers['Cookie'] = `substack.sid=${process.env.SUBSTACK_SESSION_COOKIE}`;
+      }
+
       const response = await fetch(url, {
         signal: controller.signal as any,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        }
+        headers
       });
 
       clearTimeout(timeoutId);

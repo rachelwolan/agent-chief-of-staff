@@ -109,8 +109,9 @@ program
       
       spinner.succeed('Dossier generated successfully!');
 
-      // Save dossier
-      const date = new Date().toISOString().split('T')[0];
+      // Save dossier (use local date, not UTC)
+      const now = new Date();
+      const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       const dossiersDir = path.join(process.cwd(), 'logs', 'dossiers');
       if (!fs.existsSync(dossiersDir)) {
         fs.mkdirSync(dossiersDir, { recursive: true });
@@ -125,24 +126,26 @@ program
       console.log(chalk.cyan('📋 Executive Summary:'));
       console.log(chalk.white(dossier.summary));
       
-      console.log(chalk.cyan('\n🎯 Key Themes:'));
-      dossier.themes.forEach((theme, i) => {
-        console.log(chalk.white(`  ${i + 1}. ${theme}`));
-      });
-
-      console.log(chalk.cyan('\n📊 Trend Signals:'));
-      dossier.trendSignals.forEach((signal, i) => {
-        console.log(chalk.white(`  ${i + 1}. ${signal}`));
+      console.log(chalk.cyan('\n🎯 Key Insights:'));
+      dossier.keyInsights.forEach((insight: string, i: number) => {
+        console.log(chalk.white(`  ${i + 1}. ${insight}`));
       });
 
       console.log(chalk.cyan('\n💡 Strategic Implications:'));
       console.log(chalk.white(dossier.strategicImplications));
 
-      console.log(chalk.cyan('\n📚 Source Articles:'));
-      dossier.articles.forEach((article, i) => {
-        console.log(chalk.gray(`  ${i + 1}. ${article.title}`));
+      console.log(chalk.cyan('\n📚 Articles Analyzed:'));
+      dossier.articles.forEach((article: any, i: number) => {
+        const star = article.shouldRead ? '⭐ ' : '   ';
+        console.log(chalk.white(`${star}${i + 1}. ${article.title}`));
         console.log(chalk.gray(`     ${article.url}`));
-        console.log(chalk.gray(`     Source: ${article.source}\n`));
+        console.log(chalk.gray(`     Source: ${article.source}`));
+        if (article.takeaways) {
+          article.takeaways.forEach((takeaway: string) => {
+            console.log(chalk.cyan(`       • ${takeaway}`));
+          });
+        }
+        console.log('');
       });
 
       console.log(chalk.cyan('🔗 Full dossier available in the JSON file above.'));

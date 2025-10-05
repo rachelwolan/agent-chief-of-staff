@@ -1999,6 +1999,33 @@ body {
     color: var(--text-muted);
 }
 
+.article-takeaways {
+    margin-top: 8px;
+    padding-left: 20px;
+    list-style: disc;
+}
+
+.article-takeaways li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 4px 0;
+}
+
+.priority-article {
+    border-left: 3px solid #F59E0B;
+    background: #FFFBEB !important;
+}
+
+.priority-article:hover {
+    background: #FEF3C7 !important;
+}
+
+.priority-article .article-number {
+    color: #F59E0B;
+    font-weight: 700;
+}
+
 .error-details {
     font-size: 14px;
     color: var(--text-muted);

@@ -44,6 +44,9 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
 # OpenAI (for Whisper Transcription)
 OPENAI_API_KEY=your_openai_key
 
+# Substack (for Reading Paywalled Articles)
+SUBSTACK_SESSION_COOKIE=your_substack_session_id
+
 # Slack (for Notifications)
 SLACK_BOT_TOKEN=xoxb-your-slack-token
 
@@ -131,7 +134,33 @@ This will:
 - Save tokens to `~/.config/claude/google-token.json`
 - Enable calendar access
 
-## 5. Slack Setup (Optional)
+## 5. Substack Authentication (Optional)
+
+Required for reading paywalled Substack articles in your newsletters.
+
+### Get Your Session Cookie
+
+1. Open a browser and log in to https://substack.com/
+2. Open **Developer Tools** (F12 or Cmd+Option+I on Mac)
+3. Go to **Application** tab → **Cookies** → `https://substack.com`
+4. Find the cookie named `substack.sid`
+5. Copy its **Value** (long string starting with `s%3A`)
+6. Add to `.env`:
+   ```bash
+   SUBSTACK_SESSION_COOKIE=s%3Ayour-session-id-here.xxx
+   ```
+
+**Security Notes**:
+- This cookie grants access to your Substack account
+- Keep it secure and never commit to git
+- Rotate periodically by logging out and back in
+- Only your paid subscriptions will be accessible
+
+Used by:
+- Article fetcher when accessing Substack URLs
+- Enables reading paid newsletter content
+
+## 6. Slack Setup (Optional)
 
 Required for Slack notifications and channel summaries.
 
@@ -152,7 +181,7 @@ Required for Slack notifications and channel summaries.
    SLACK_BOT_TOKEN=xoxb-your-token
    ```
 
-## 6. Tableau Setup (Optional)
+## 7. Tableau Setup (Optional)
 
 Required for dashboard monitoring.
 
@@ -169,7 +198,7 @@ Required for dashboard monitoring.
    TABLEAU_TOKEN_VALUE=your-token-value
    ```
 
-## 7. Build & Test
+## 8. Build & Test
 
 ```bash
 # Compile TypeScript

@@ -21,6 +21,14 @@ dotenv.config({ path: join(dirname(__dirname), '.env') });
 const app = express();
 const PORT = 3000;
 
+// Helper function to format date in local timezone (not UTC)
+function formatLocalDate(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Middleware
 app.use(express.static(__dirname));
 app.use(express.json());
@@ -576,8 +584,8 @@ app.get('/api/gmail/newsletters', async (req, res) => {
     }
 });
 
-// Learn-it-all Dossier Generation
-app.post('/api/learn-it-all/generate', async (req, res) => {
+// Daily Dossier Generation
+app.post('/api/dossier/generate', async (req, res) => {
     try {
         console.log('🔄 Starting dossier generation...');
 
@@ -633,10 +641,17 @@ app.post('/api/learn-it-all/generate', async (req, res) => {
             await mkdir(dossiersDir, { recursive: true });
         }
 
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = formatLocalDate();
         const dossierPath = join(dossiersDir, `${dateStr}.json`);
         await writeFile(dossierPath, JSON.stringify(dossier, null, 2));
         console.log(`💾 Dossier saved to ${dossierPath}`);
+
+        // Archive newsletters after successful processing
+        const newsletterIds = newsletters.map(n => n.id);
+        if (newsletterIds.length > 0) {
+            console.log(`📥 Archiving ${newsletterIds.length} newsletters...`);
+            await gmailService.archiveMessages(newsletterIds);
+        }
 
         res.json(dossier);
     } catch (error) {
@@ -649,7 +664,7 @@ app.post('/api/learn-it-all/generate', async (req, res) => {
 });
 
 // Get today's dossier (if exists)
-app.get('/api/learn-it-all/today', async (req, res) => {
+app.get('/api/dossier/today', async (req, res) => {
     try {
         const dateStr = new Date().toISOString().split('T')[0];
         const dossierPath = join(dirname(__dirname), 'logs', 'dossiers', `${dateStr}.json`);

@@ -9,16 +9,23 @@ export interface DossierShare {
   mentions?: string[];
 }
 
+export interface ArticleAnalysis {
+  url: string;
+  title: string;
+  source: string;
+  takeaways: [string, string]; // Exactly 2 bullet points
+  shouldRead: boolean; // Star priority articles
+}
+
 export interface Dossier {
   date: string;
   summary: string; // Executive summary
-  themes: string[]; // 3-5 key themes
-  trendSignals: string[]; // Emerging patterns
-  strategicImplications: string; // What this means for Webflow
+  keyInsights: string[]; // 3-5 consolidated insights (replaces themes + signals)
+  strategicImplications: string; // Tailored to Rachel's style
   productOrgShare: DossierShare;
   eStaffShare: DossierShare;
-  fullDossier: string; // The complete 1000-word synthesis
-  articles: Array<{ url: string; title: string; source: string }>; // Article references
+  fullAnalysis: string; // Markdown-formatted synthesis
+  articles: ArticleAnalysis[]; // Articles with takeaways and priority
 }
 
 export class DossierGeneratorService {
@@ -44,7 +51,15 @@ ${article.content}
 ---
       `).join('\n');
 
-    const prompt = `You are Rachel's AI Chief of Staff. Rachel is the CPO at Webflow, an Enneagram 7w6 (Enthusiast + Loyalist) who values: learn-it-all > know-it-all, speed as a habit, and being AI-native not AI-enabled.
+    const prompt = `You are Rachel's AI Chief of Staff. 
+
+## Rachel's Context:
+- **Role**: CPO at Webflow (no-code website builder)
+- **Background**: 20+ years SaaS, GM of Dropbox Core ($2B P&L), 8+ years building AI products
+- **Philosophy**: Learn-it-all > know-it-all, speed as habit, AI-native not AI-enabled
+- **Communication Style**: Direct, actionable, grounded in first principles
+- **Strategic Focus**: Answer Engine Optimization (AEO), AI-native transformation, distribution-first thinking
+- **Personality**: Enneagram 7w6 (Enthusiast + Loyalist) - optimistic but grounded, curious but loyal
 
 Today's newsletters contained these articles:
 
@@ -55,56 +70,56 @@ ${articlesContext}
 ## Requirements:
 
 1. **Executive Summary** (100 words): What Rachel needs to know right now
+   - Direct and punchy
+   - Connect to her strategic priorities (AI-native, AEO, speed)
 
-2. **Key Themes** (3-5 bullet points): Major patterns across articles
+2. **Key Insights** (3-5 bullet points): Consolidated patterns and signals
+   - Merge themes AND emerging trends into ONE list
    - Be specific and actionable
-   - Connect to product/tech strategy
+   - Connect to Webflow's opportunities
 
-3. **Trend Signals** (3-5 bullet points): What's emerging
-   - Early indicators worth watching
-   - Competitive intelligence
-   - Market shifts
+3. **Strategic Implications** (200 words): What this means for Webflow
+   - Write in Rachel's voice: learn-it-all mindset, first principles thinking
+   - Focus on: AI-native opportunities, distribution advantages, speed as competitive edge
+   - Frame as "here's what's interesting" not prescriptive
+   - Ground in measurable impact when possible
+   - Include 2-3 provocative questions at the end
 
-4. **Strategic Implications** (200 words): What this means for Webflow
-   - Product opportunities
-   - Competitive threats
-   - Strategic bets to consider
-   - Frame as possibilities, not prescriptions
+4. **Product Org Share**: Pick ONE article to share
+   - Tactical, actionable, or inspiring
+   - Casual Slack message (2-3 sentences max)
+   - Rachel's voice: enthusiastic but grounded
+   - Include article link and title
 
-5. **Product Org Share**: Pick ONE article to share with the Product org
-   - Choose something tactical, actionable, or inspiring
-   - Write a casual Slack message (2-3 sentences max)
-   - Make it feel personal to Rachel's voice
-   - Include the article link and title
+5. **E-Staff Share**: Pick ONE article for executives
+   - Strategic or cross-functional
+   - Brief Slack message with @mentions:
+     * Linda (CEO) - strategy, growth, board
+     * Allan (CTO) - infrastructure, technical excellence
+     * Craig (CFO) - ROI, efficiency
+     * Adrian (CRO) - GTM, premium experiences
+     * Mike (SVP People) - talent, culture
+   - Apply Decker: Listeners + POV + Benefits
+   - Include article link and title
 
-6. **E-Staff Share**: Pick ONE article for the executive team
-   - Choose something strategic or cross-functional
-   - Write a brief Slack message (2-3 sentences) @mentioning relevant people:
-     * Linda (CEO) - strategy, growth, board-level thinking
-     * Allan (CTO) - infrastructure, technical excellence, platform scale
-     * Craig (CFO) - ROI, efficiency, business impact
-     * Adrian (CRO) - GTM, premium experiences, market positioning
-     * Mike (SVP People) - talent, culture, org effectiveness
-   - Apply Decker Cornerstones:
-     * Listeners: Who should care (mention them)
-     * POV: One clear takeaway
-     * Benefits: What's in it for THEM
-   - Include the article link and title
-
-7. **Full Dossier** (1000 words): Complete synthesis
+6. **Full Analysis** (1000 words): Complete synthesis in MARKDOWN format
+   - Use markdown formatting (## headers, **bold**, [links](url))
    - Conversational but sharp
-   - Connect dots across articles
+   - Connect dots across articles with inline citations
    - Highlight non-obvious insights
    - Include contrarian takes when warranted
-   - Cite specific articles with their URLs inline (use markdown links)
-   - End with 2-3 provocative questions for Rachel to consider
+   - Ground in Rachel's strategic priorities
+
+7. **Article Takeaways**: For EACH article, provide:
+   - 2 bullet points summarizing key takeaways (actionable and specific)
+   - Boolean flag indicating if Rachel should prioritize reading this (star it)
+   - Prioritize articles about: AI-native products, distribution strategies, measurable impact, product-led growth, technical leadership
 
 Return ONLY valid JSON matching this structure:
 {
   "summary": "executive summary here",
-  "themes": ["theme 1", "theme 2", ...],
-  "trendSignals": ["signal 1", "signal 2", ...],
-  "strategicImplications": "implications here",
+  "keyInsights": ["insight 1", "insight 2", ...],
+  "strategicImplications": "implications in Rachel's voice with 2-3 questions at end",
   "productOrgShare": {
     "link": "article url",
     "title": "article title",
@@ -114,9 +129,18 @@ Return ONLY valid JSON matching this structure:
     "link": "article url",
     "title": "article title",
     "slackMessage": "strategic message with @mentions",
-    "mentions": ["Linda", "Allan", "Craig"]
+    "mentions": ["Linda", "Allan"]
   },
-  "fullDossier": "complete 1000-word synthesis with inline article citations as markdown links"
+  "fullAnalysis": "1000-word synthesis in MARKDOWN format with ## headers, **bold**, [links](url)",
+  "articles": [
+    {
+      "url": "article url",
+      "title": "article title",
+      "source": "publication",
+      "takeaways": ["takeaway 1", "takeaway 2"],
+      "shouldRead": true
+    }
+  ]
 }`;
 
     console.log('🤖 Using Claude Sonnet 4.5 for analysis...');
@@ -152,8 +176,7 @@ Return ONLY valid JSON matching this structure:
     const dossier: Dossier = {
       date: new Date().toISOString(),
       summary: result.summary || '',
-      themes: result.themes || [],
-      trendSignals: result.trendSignals || [],
+      keyInsights: result.keyInsights || [],
       strategicImplications: result.strategicImplications || '',
       productOrgShare: {
         audience: 'product-org',
@@ -168,11 +191,13 @@ Return ONLY valid JSON matching this structure:
         slackMessage: result.eStaffShare?.slackMessage || '',
         mentions: result.eStaffShare?.mentions || []
       },
-      fullDossier: result.fullDossier || '',
-      articles: articles.map(a => ({
+      fullAnalysis: result.fullAnalysis || '',
+      articles: result.articles || articles.map(a => ({
         url: a.url,
         title: a.title,
-        source: a.siteName || new URL(a.url).hostname
+        source: a.siteName || new URL(a.url).hostname,
+        takeaways: ['', ''] as [string, string],
+        shouldRead: false
       }))
     };
 

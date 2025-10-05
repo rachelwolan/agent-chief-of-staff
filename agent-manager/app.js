@@ -20,6 +20,14 @@ const MY_TEAM = [
     { name: 'Ashwini Chaube', email: 'ashwini.chaube@webflow.com' }
 ];
 
+// Helper function to format date in local timezone (not UTC)
+function formatLocalDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     loadCalendar();
@@ -39,7 +47,7 @@ function showView(viewName) {
     document.getElementById('calendar-view').style.display = 'none';
     document.getElementById('agents-view').style.display = 'none';
     document.getElementById('outputs-view').style.display = 'none';
-    document.getElementById('learn-view').style.display = 'none';
+    document.getElementById('dossier-view').style.display = 'none';
 
     // Update nav items
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -58,8 +66,8 @@ function showView(viewName) {
         loadAgents();
     } else if (viewName === 'outputs') {
         loadOutputs();
-    } else if (viewName === 'learn') {
-        loadLearnItAll();
+    } else if (viewName === 'dossier') {
+        loadDailyDossier();
     }
 }
 
@@ -986,7 +994,8 @@ let isCardFlipped = false;
 
 async function loadIndexCard() {
     try {
-        const dateStr = currentDate.toISOString().split('T')[0];
+        // Use local timezone for date (not UTC)
+        const dateStr = formatLocalDate(currentDate);
         const response = await fetch(`/api/index-card/${dateStr}`);
         currentCard = await response.json();
         renderIndexCard();
@@ -1035,7 +1044,7 @@ function renderIndexCard() {
     if (!currentCard) {
         // Create new blank card
         currentCard = {
-            date: currentDate.toISOString().split('T')[0],
+            date: formatLocalDate(currentDate),
             createdAt: new Date().toISOString(),
             priorities: ['', '', ''],
             completed: [false, false, false],
@@ -1210,8 +1219,8 @@ async function autoSaveCard() {
 // LEARN-IT-ALL FUNCTIONS
 // ============================================
 
-async function loadLearnItAll() {
-    const container = document.getElementById('learn-content');
+async function loadDailyDossier() {
+    const container = document.getElementById('dossier-content');
 
     try {
         // Check Gmail auth status
@@ -1234,7 +1243,7 @@ async function loadLearnItAll() {
         }
 
         // Check if today's dossier already exists
-        const todayResponse = await fetch('/api/learn-it-all/today');
+        const todayResponse = await fetch('/api/dossier/today');
         const existingDossier = await todayResponse.json();
 
         if (existingDossier) {
@@ -1261,7 +1270,7 @@ async function loadLearnItAll() {
 }
 
 async function generateDossier() {
-    const container = document.getElementById('learn-content');
+    const container = document.getElementById('dossier-content');
 
     container.innerHTML = `
         <div class="loading-state">
@@ -1272,7 +1281,7 @@ async function generateDossier() {
     `;
 
     try {
-        const response = await fetch('/api/learn-it-all/generate', {
+        const response = await fetch('/api/dossier/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -1294,43 +1303,54 @@ async function generateDossier() {
         container.innerHTML = `
             <div class="error-state">
                 <p>⚠️ Failed to generate dossier</p>
-                <button class="btn-primary" onclick="loadLearnItAll()">Try Again</button>
+                <button class="btn-primary" onclick="loadDailyDossier()">Try Again</button>
             </div>
         `;
     }
 }
 
 function renderDossier(dossier) {
-    const container = document.getElementById('learn-content');
+    const container = document.getElementById('dossier-content');
+
+    // Simple markdown to HTML converter
+    const markdownToHtml = (md) => {
+        if (!md) return '';
+        return md
+            // Headers
+            .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+            .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+            // Bold
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            // Links
+            .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
+            // Paragraphs
+            .split('\n\n')
+            .map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '')
+            .join('');
+    };
 
     container.innerHTML = `
         <div class="dossier-content">
             <div class="dossier-section">
-                <h3>Executive Summary</h3>
+                <h3>📋 Executive Summary</h3>
                 <p>${dossier.summary}</p>
             </div>
 
             <div class="dossier-section">
-                <h3>Key Themes</h3>
+                <h3>🎯 Key Insights</h3>
                 <ul>
-                    ${dossier.themes.map(theme => `<li>${theme}</li>`).join('')}
+                    ${(dossier.keyInsights || []).map(insight => `<li>${insight}</li>`).join('')}
                 </ul>
             </div>
 
             <div class="dossier-section">
-                <h3>Trend Signals</h3>
-                <ul>
-                    ${dossier.trendSignals.map(signal => `<li>${signal}</li>`).join('')}
-                </ul>
+                <h3>💡 Strategic Implications</h3>
+                <div class="dossier-full">${markdownToHtml(dossier.strategicImplications)}</div>
             </div>
 
             <div class="dossier-section">
-                <h3>Strategic Implications</h3>
-                <p>${dossier.strategicImplications}</p>
-            </div>
-
-            <div class="dossier-section">
-                <h3>Share with Product Org</h3>
+                <h3>📤 Share with Product Org</h3>
                 <div class="share-card">
                     <a href="${dossier.productOrgShare.link}" target="_blank" class="share-title">${dossier.productOrgShare.title}</a>
                     <p class="share-message">${dossier.productOrgShare.slackMessage}</p>
@@ -1338,7 +1358,7 @@ function renderDossier(dossier) {
             </div>
 
             <div class="dossier-section">
-                <h3>Share with E-Staff</h3>
+                <h3>📤 Share with E-Staff</h3>
                 <div class="share-card">
                     <a href="${dossier.eStaffShare.link}" target="_blank" class="share-title">${dossier.eStaffShare.title}</a>
                     <p class="share-message">${dossier.eStaffShare.slackMessage}</p>
@@ -1347,8 +1367,8 @@ function renderDossier(dossier) {
             </div>
 
             <div class="dossier-section">
-                <h3>Full Analysis</h3>
-                <div class="dossier-full">${dossier.fullDossier.split('\n').map(p => `<p>${p}</p>`).join('')}</div>
+                <h3>📝 Full Analysis</h3>
+                <div class="dossier-full">${markdownToHtml(dossier.fullAnalysis || dossier.fullDossier || '')}</div>
             </div>
 
             ${dossier.newsletters && dossier.newsletters.length > 0 ? `
@@ -1370,14 +1390,19 @@ function renderDossier(dossier) {
 
             ${dossier.articles && dossier.articles.length > 0 ? `
             <div class="dossier-section">
-                <h3>📰 Articles Analyzed (${dossier.articles.length})</h3>
+                <h3>📰 Article Takeaways (${dossier.articles.length})</h3>
                 <div class="articles-list">
                     ${dossier.articles.map((article, idx) => `
-                        <div class="article-item">
-                            <span class="article-number">${idx + 1}.</span>
+                        <div class="article-item ${article.shouldRead ? 'priority-article' : ''}">
+                            <span class="article-number">${article.shouldRead ? '⭐' : ''} ${idx + 1}.</span>
                             <div class="article-info">
                                 <a href="${article.url}" target="_blank" class="article-title">${article.title || 'Untitled'}</a>
                                 <span class="article-source">${article.source}</span>
+                                ${article.takeaways && article.takeaways.length > 0 ? `
+                                    <ul class="article-takeaways">
+                                        ${article.takeaways.map(t => `<li>${t}</li>`).join('')}
+                                    </ul>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('')}

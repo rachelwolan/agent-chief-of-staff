@@ -265,4 +265,32 @@ export class GmailService {
 
     return detailedMessages;
   }
+
+  /**
+   * Archive messages (remove from INBOX)
+   */
+  async archiveMessages(messageIds: string[]): Promise<void> {
+    const auth = this.getOAuth2Client();
+    const gmail = google.gmail({ version: 'v1', auth });
+
+    console.log(`📥 Archiving ${messageIds.length} newsletter(s)...`);
+
+    for (const messageId of messageIds) {
+      try {
+        // Archive = remove INBOX label (Gmail's standard archive behavior)
+        await gmail.users.messages.modify({
+          userId: 'me',
+          id: messageId,
+          requestBody: {
+            removeLabelIds: ['INBOX']
+          }
+        });
+        console.log(`✅ Archived newsletter: ${messageId}`);
+      } catch (error) {
+        console.error(`❌ Error archiving ${messageId}:`, (error as Error).message);
+      }
+    }
+    
+    console.log(`✅ Finished archiving ${messageIds.length} newsletter(s)`);
+  }
 }
