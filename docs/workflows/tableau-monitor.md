@@ -29,7 +29,7 @@ Add your Tableau username and password to `.env`:
 # Tableau Configuration
 TABLEAU_SITE_URL=https://prod-useast-a.online.tableau.com
 TABLEAU_SITE_NAME=webflowanalytics
-TABLEAU_USERNAME=your-username@webflow.com
+TABLEAU_USERNAME=rachel.wolan@webflow.com
 TABLEAU_PASSWORD=your-password
 ```
 

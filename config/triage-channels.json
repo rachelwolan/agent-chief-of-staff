@@ -1,0 +1,48 @@
+{
+  "channels": [
+    {
+      "id": "C9L7F0725",
+      "name": "all-incidents",
+      "priority": "high",
+      "category": "incidents",
+      "description": "Main incident coordination channel - On Call Commander"
+    },
+    {
+      "id": "C06CATWDAFM",
+      "name": "cpo-directs",
+      "priority": "high",
+      "category": "critical",
+      "description": "Direct reports channel - highest priority"
+    },
+    {
+      "id": "C08JE5JAF9A",
+      "name": "ashwini-rachel",
+      "priority": "high",
+      "category": "leadership",
+      "description": "1:1 channel with Ashwini"
+    }
+  ],
+  "schedules": [
+    {
+      "time": "07:30",
+      "timezone": "America/Los_Angeles",
+      "timeRange": "since-last-triage"
+    },
+    {
+      "time": "12:00",
+      "timezone": "America/Los_Angeles",
+      "timeRange": "4h"
+    },
+    {
+      "time": "17:00",
+      "timezone": "America/Los_Angeles",
+      "timeRange": "5h"
+    }
+  ],
+  "settings": {
+    "messageLimit": 100,
+    "maxMessagesPerChannel": 50,
+    "excludeThreads": false,
+    "includeBotMessages": false
+  }
+}

@@ -51,6 +51,7 @@ PRDs saved to `/tasks/` as `[n]-prd-[feature].md`
 - **Validation**: Zod schemas for all inputs/outputs
 - **Logging**: All executions logged to `/logs/`
 - **Template Variables**: Use `{{variable}}` syntax in prompts
+- **Test Files**: Clean up temporary `.ts` test files from root directory after testing. Keep root clean - only permanent scripts like `start-slack-bot.ts` should remain
 
 ## Documentation
 

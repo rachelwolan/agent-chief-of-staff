@@ -1,0 +1,38 @@
+{
+  "dashboardUrl": "https://app.snowflake.com/olqgxru/wn71398/#/growth-of-our-overall-ss-business-dDBP3cY9S",
+  "dashboardName": "Growth of Overall SS Business",
+  "database": "ANALYTICS",
+  "warehouse": "webflow",
+  "metricsToTrack": [
+    {
+      "metricName": "Total ARR",
+      "sqlQuery": "SELECT SUM(arr) as total_arr FROM ANALYTICS.finance.arr_metrics WHERE date = CURRENT_DATE",
+      "thresholds": {
+        "critical": 100000000,
+        "warning": 120000000
+      }
+    },
+    {
+      "metricName": "Monthly Recurring Revenue",
+      "sqlQuery": "SELECT SUM(mrr) as total_mrr FROM ANALYTICS.finance.revenue_metrics WHERE date = CURRENT_DATE"
+    },
+    {
+      "metricName": "Monthly Active Customers",
+      "sqlQuery": "SELECT COUNT(DISTINCT customer_id) as active_customers FROM ANALYTICS.product.user_activity WHERE month = DATE_TRUNC('month', CURRENT_DATE)"
+    },
+    {
+      "metricName": "Net New ARR",
+      "sqlQuery": "SELECT SUM(new_arr - churned_arr) as net_new_arr FROM ANALYTICS.finance.arr_changes WHERE date >= DATE_TRUNC('month', CURRENT_DATE)"
+    },
+    {
+      "metricName": "Customer Churn Rate",
+      "sqlQuery": "SELECT churn_rate FROM ANALYTICS.finance.churn_metrics WHERE date = CURRENT_DATE",
+      "thresholds": {
+        "critical": 5.0,
+        "warning": 3.0
+      }
+    }
+  ],
+  "comparisonPeriod": "previous-run",
+  "alertChannels": ["log"]
+}

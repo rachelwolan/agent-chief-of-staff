@@ -76,3 +76,6 @@ temp/
 !package-lock.json
 !agent-manager/**/*.js
 !agent-manager/**/*.json
+
+# External repos
+snowflake-mcp/
