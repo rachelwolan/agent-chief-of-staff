@@ -1513,30 +1513,50 @@ async function autofillMeetingContext() {
         }
 
         if (currentOrNext) {
-            // Set meeting title
-            document.getElementById('meeting-title-input').value = currentOrNext.summary || '';
+            // Clean up meeting title (remove duration, your name, extra info)
+            let cleanTitle = currentOrNext.summary || '';
 
-            // Extract attendee names (first names only, exclude yourself and calendar IDs)
-            const attendeeEmails = currentOrNext.attendees
-                .map(a => typeof a === 'string' ? a : a.email)
-                .filter(email =>
-                    email &&
-                    email.includes('@') &&
-                    !email.includes('rachel.wolan@webflow.com') &&
-                    !email.startsWith('c_') &&
-                    !email.includes('group.calendar.google.com')
-                );
+            // Remove duration patterns like "(45 mins)", "(1 hour)", etc.
+            cleanTitle = cleanTitle.replace(/\s*\([\d\s]+(mins?|hours?|hr)\)/gi, '');
 
-            const attendeeNames = attendeeEmails
-                .map(email => {
-                    const name = email.split('@')[0];
-                    const parts = name.split('.');
-                    // Capitalize first name
-                    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-                })
-                .filter(name => name && name.length > 1)
-                .slice(0, 5) // Max 5 names
-                .join(', ');
+            // Remove "- Rachel Wolan" or similar
+            cleanTitle = cleanTitle.replace(/\s*-\s*Rachel\s+Wolan/gi, '');
+
+            // Trim whitespace
+            cleanTitle = cleanTitle.trim();
+
+            document.getElementById('meeting-title-input').value = cleanTitle;
+
+            // Extract attendee names from summary first (often has names)
+            let attendeeNames = '';
+
+            // Try to extract name from title like "Neil Laughlin - 1:1"
+            const nameMatch = cleanTitle.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s*-/);
+            if (nameMatch) {
+                attendeeNames = nameMatch[1];
+            } else if (currentOrNext.attendees && currentOrNext.attendees.length > 0) {
+                // Fall back to email extraction
+                const attendeeEmails = currentOrNext.attendees
+                    .map(a => typeof a === 'string' ? a : a.email)
+                    .filter(email =>
+                        email &&
+                        email.includes('@') &&
+                        !email.includes('rachel.wolan@webflow.com') &&
+                        !email.startsWith('c_') &&
+                        !email.includes('group.calendar.google.com')
+                    );
+
+                attendeeNames = attendeeEmails
+                    .map(email => {
+                        const name = email.split('@')[0];
+                        const parts = name.split('.');
+                        // Capitalize first and last name
+                        return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+                    })
+                    .filter(name => name && name.length > 1)
+                    .slice(0, 3) // Max 3 names
+                    .join(', ');
+            }
 
             document.getElementById('meeting-attendees-input').value = attendeeNames || '';
 
