@@ -2505,12 +2505,13 @@ body {
 /* Meeting Context Modal */
 .modal-small {
     max-width: 400px;
+    align-items: flex-start;
+    padding-top: 10vh;
 }
 
 .modal-small .modal-content {
     padding: 20px;
-    max-height: 85vh;
-    overflow-y: auto;
+    width: 100%;
 }
 
 .modal-small h2 {
