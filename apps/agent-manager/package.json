@@ -1,0 +1,23 @@
+{
+  "name": "agent-manager",
+  "version": "1.0.0",
+  "description": "Chief of Staff Agent Manager - Web interface for managing AI agents",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "cheerio": "^1.1.2",
+    "express": "^4.18.2",
+    "jsdom": "^27.0.0",
+    "multer": "^2.0.2",
+    "node-fetch": "^2.7.0",
+    "openai": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^27.0.0",
+    "@types/mozilla-readability": "^0.2.1"
+  }
+}
