@@ -33,19 +33,37 @@ export class TranscriptionService {
   }
 
   /**
-   * Transcribe a single audio file
+   * Transcribe a single audio file with retry logic
    */
-  private async transcribeSingleFile(audioFilePath: string): Promise<string> {
-    const audioFile = createReadStream(audioFilePath);
+  private async transcribeSingleFile(audioFilePath: string, maxRetries: number = 3): Promise<string> {
+    let lastError: Error | undefined;
 
-    const transcription = await this.openai.audio.transcriptions.create({
-      file: audioFile,
-      model: 'whisper-1',
-      response_format: 'verbose_json',
-      language: 'en',
-    });
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const audioFile = createReadStream(audioFilePath);
 
-    return transcription.text;
+        const transcription = await this.openai.audio.transcriptions.create({
+          file: audioFile,
+          model: 'whisper-1',
+          response_format: 'verbose_json',
+          language: 'en',
+        });
+
+        return transcription.text;
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`Transcription attempt ${attempt}/${maxRetries} failed:`, error);
+
+        // If it's a connection error and we have retries left, wait and try again
+        if (attempt < maxRetries) {
+          const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 10000); // Exponential backoff, max 10s
+          console.log(`Waiting ${waitTime / 1000}s before retry...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+    }
+
+    throw new Error(`Failed to transcribe after ${maxRetries} attempts: ${lastError?.message}`);
   }
 
   /**

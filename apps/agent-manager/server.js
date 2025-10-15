@@ -36,9 +36,17 @@ function formatLocalDate(date = new Date()) {
 app.use(express.static(__dirname));
 app.use(express.json());
 
-// Configure multer for file uploads
+// Configure multer for file uploads with custom filename
+const storage = multer.diskStorage({
+    destination: join(ROOT_DIR, 'transcripts', 'recordings'),
+    filename: (req, file, cb) => {
+        // Use the original filename from the client (already includes meeting context)
+        cb(null, file.originalname);
+    }
+});
+
 const upload = multer({
-    dest: join(ROOT_DIR, 'transcripts', 'recordings'),
+    storage: storage,
     limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit
 });
 
@@ -738,41 +746,23 @@ app.post('/api/meeting/process-recording', upload.single('audio'), async (req, r
         }
 
         console.log('📁 Received audio file:', req.file.originalname);
-
-        // Ensure recordings directory exists
-        const recordingsDir = join(ROOT_DIR, 'transcripts', 'recordings');
-        if (!existsSync(recordingsDir)) {
-            await mkdir(recordingsDir, { recursive: true });
-        }
-
-        // Rename the uploaded file to have the correct .webm extension
-        // OpenAI Whisper API needs the file extension to recognize the format
-        const { rename } = await import('fs/promises');
-        const webmPath = req.file.path + '.webm';
-        await rename(req.file.path, webmPath);
-
-        // Step 1: Transcribe with OpenAI Whisper
-        console.log('🎙️ Transcribing with Whisper API...');
-        const transcription = await openai.audio.transcriptions.create({
-            file: createReadStream(webmPath),
-            model: 'whisper-1',
-            response_format: 'text'
+        console.log('📝 Meeting context:', {
+            title: req.body.meetingTitle || '(none)',
+            attendees: req.body.meetingAttendees || '(none)'
         });
 
-        console.log('✅ Transcription complete');
+        // File is already saved with correct name in recordings directory
+        const audioPath = req.file.path;
 
-        // Save transcript
-        const transcriptPath = join(ROOT_DIR, 'transcripts', `meeting-${Date.now()}.txt`);
-        await writeFile(transcriptPath, transcription);
-
-        // Step 2: Process with meeting processor using Anthropic
-        console.log('🤖 Processing with Claude...');
+        // Process the audio file using the meeting processor script
+        // This will: transcribe (with auto-splitting if needed), analyze, and post to Slack
+        console.log('🚀 Starting meeting processor...');
         const { exec } = await import('child_process');
         const util = await import('util');
         const execPromise = util.promisify(exec);
 
         const { stdout, stderr } = await execPromise(
-            `npm run meeting:process "${transcriptPath}"`,
+            `npm run meeting:process "${audioPath}"`,
             { cwd: ROOT_DIR }
         );
 
@@ -780,8 +770,8 @@ app.post('/api/meeting/process-recording', upload.single('audio'), async (req, r
 
         res.json({
             success: true,
-            transcript: transcription,
-            message: 'Recording processed and posted to Slack'
+            message: 'Recording processed and posted to Slack',
+            filename: req.file.originalname
         });
 
     } catch (error) {

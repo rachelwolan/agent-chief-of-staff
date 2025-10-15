@@ -1466,19 +1466,25 @@ async function autofillMeetingContext() {
     try {
         // Find current or next meeting
         const now = new Date();
-        const currentOrNext = calendarEvents.find(event => {
+
+        // First check if there's a meeting happening right now
+        let currentOrNext = calendarEvents.find(event => {
             const start = new Date(event.start);
             const end = new Date(event.end);
-
-            // Current meeting (started and hasn't ended)
-            if (start <= now && end >= now) {
-                return true;
-            }
-
-            // Next meeting (starts within the next 15 minutes)
-            const minutesUntilStart = (start - now) / (1000 * 60);
-            return minutesUntilStart > 0 && minutesUntilStart <= 15;
+            return start <= now && end >= now;
         });
+
+        // If no current meeting, find the next upcoming meeting
+        if (!currentOrNext) {
+            const upcomingEvents = calendarEvents
+                .filter(event => {
+                    const start = new Date(event.start);
+                    return start > now;
+                })
+                .sort((a, b) => new Date(a.start) - new Date(b.start));
+
+            currentOrNext = upcomingEvents[0]; // Get the very next meeting
+        }
 
         if (currentOrNext) {
             // Set meeting title
@@ -1502,7 +1508,15 @@ async function autofillMeetingContext() {
             // Show autofill message
             const start = new Date(currentOrNext.start);
             const isCurrent = start <= now;
-            const statusText = isCurrent ? 'current meeting' : 'next meeting';
+
+            let statusText;
+            if (isCurrent) {
+                statusText = 'current meeting';
+            } else {
+                const minutesUntil = Math.round((start - now) / (1000 * 60));
+                statusText = `next meeting (in ${minutesUntil} min)`;
+            }
+
             document.getElementById('modal-description').innerHTML =
                 `✨ <strong>Autofilled from your ${statusText}</strong> • Edit as needed`;
             document.getElementById('modal-description').style.color = '#667eea';
@@ -1695,7 +1709,23 @@ async function uploadAndProcessRecording(audioBlob) {
         setProgressBar(25);
 
         const formData = new FormData();
-        formData.append('audio', audioBlob, `meeting-${Date.now()}.webm`);
+
+        // Create filename from meeting context
+        const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        let filename = `${timestamp}`;
+        if (meetingContext.title) {
+            const cleanTitle = meetingContext.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '')
+                .slice(0, 50); // Max 50 chars
+            filename += `-${cleanTitle}`;
+        }
+        filename += '.webm';
+
+        formData.append('audio', audioBlob, filename);
+        formData.append('meetingTitle', meetingContext.title || '');
+        formData.append('meetingAttendees', meetingContext.attendees || '');
 
         const response = await fetch('/api/meeting/process-recording', {
             method: 'POST',
