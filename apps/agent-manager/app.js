@@ -1453,9 +1453,71 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function toggleRecordingWidget() {
+async function toggleRecordingWidget() {
+    // Try to autofill from current or next calendar event
+    await autofillMeetingContext();
+
     const modal = document.getElementById('meeting-context-modal');
     modal.style.display = 'flex';
+}
+
+async function autofillMeetingContext() {
+    try {
+        // Find current or next meeting
+        const now = new Date();
+        const currentOrNext = calendarEvents.find(event => {
+            const start = new Date(event.start);
+            const end = new Date(event.end);
+
+            // Current meeting (started and hasn't ended)
+            if (start <= now && end >= now) {
+                return true;
+            }
+
+            // Next meeting (starts within the next 15 minutes)
+            const minutesUntilStart = (start - now) / (1000 * 60);
+            return minutesUntilStart > 0 && minutesUntilStart <= 15;
+        });
+
+        if (currentOrNext) {
+            // Set meeting title
+            document.getElementById('meeting-title-input').value = currentOrNext.summary || '';
+
+            // Extract attendee names (first names only, exclude yourself)
+            const attendeeNames = currentOrNext.attendees
+                ?.filter(email => !email.includes('rachel.wolan@webflow.com'))
+                .map(email => {
+                    const name = email.split('@')[0];
+                    const parts = name.split('.');
+                    // Capitalize first name
+                    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+                })
+                .filter(name => name && name.length > 1)
+                .slice(0, 5) // Max 5 names
+                .join(', ');
+
+            document.getElementById('meeting-attendees-input').value = attendeeNames || '';
+
+            // Show autofill message
+            const start = new Date(currentOrNext.start);
+            const isCurrent = start <= now;
+            const statusText = isCurrent ? 'current meeting' : 'next meeting';
+            document.getElementById('modal-description').innerHTML =
+                `✨ <strong>Autofilled from your ${statusText}</strong> • Edit as needed`;
+            document.getElementById('modal-description').style.color = '#667eea';
+
+            console.log('Autofilled meeting context:', currentOrNext.summary);
+        } else {
+            // Clear fields if no meeting found
+            document.getElementById('meeting-title-input').value = '';
+            document.getElementById('meeting-attendees-input').value = '';
+            document.getElementById('modal-description').textContent = 'Add context to help with better analysis';
+            document.getElementById('modal-description').style.color = '#7f8c8d';
+        }
+    } catch (error) {
+        console.error('Error autofilling meeting context:', error);
+        // Don't block the modal from opening
+    }
 }
 
 function closeMeetingContextModal() {
