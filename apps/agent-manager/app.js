@@ -1464,20 +1464,46 @@ async function toggleRecordingWidget() {
 
 async function autofillMeetingContext() {
     try {
-        // Find current or next meeting
+        // Find current or next meeting with actual people (not all-day events, has attendees)
         const now = new Date();
 
-        // First check if there's a meeting happening right now
+        // Helper to check if event is a real meeting
+        const isRealMeeting = (event) => {
+            // Must have attendees
+            if (!event.attendees || event.attendees.length === 0) return false;
+
+            // Filter out calendar IDs and keep only real email addresses
+            const realAttendees = event.attendees.filter(a => {
+                if (typeof a === 'string') {
+                    return a.includes('@') && !a.startsWith('c_') && !a.includes('group.calendar.google.com');
+                }
+                return a.email && a.email.includes('@') && !a.email.startsWith('c_') && !a.email.includes('group.calendar.google.com');
+            });
+
+            if (realAttendees.length === 0) return false;
+
+            // Skip all-day events
+            const start = new Date(event.start);
+            const end = new Date(event.end);
+            const duration = (end - start) / (1000 * 60 * 60); // hours
+            if (duration >= 23) return false; // Likely all-day
+
+            return true;
+        };
+
+        // First check if there's a real meeting happening right now
         let currentOrNext = calendarEvents.find(event => {
+            if (!isRealMeeting(event)) return false;
             const start = new Date(event.start);
             const end = new Date(event.end);
             return start <= now && end >= now;
         });
 
-        // If no current meeting, find the next upcoming meeting
+        // If no current meeting, find the next upcoming real meeting
         if (!currentOrNext) {
             const upcomingEvents = calendarEvents
                 .filter(event => {
+                    if (!isRealMeeting(event)) return false;
                     const start = new Date(event.start);
                     return start > now;
                 })
@@ -1490,9 +1516,18 @@ async function autofillMeetingContext() {
             // Set meeting title
             document.getElementById('meeting-title-input').value = currentOrNext.summary || '';
 
-            // Extract attendee names (first names only, exclude yourself)
-            const attendeeNames = currentOrNext.attendees
-                ?.filter(email => !email.includes('rachel.wolan@webflow.com'))
+            // Extract attendee names (first names only, exclude yourself and calendar IDs)
+            const attendeeEmails = currentOrNext.attendees
+                .map(a => typeof a === 'string' ? a : a.email)
+                .filter(email =>
+                    email &&
+                    email.includes('@') &&
+                    !email.includes('rachel.wolan@webflow.com') &&
+                    !email.startsWith('c_') &&
+                    !email.includes('group.calendar.google.com')
+                );
+
+            const attendeeNames = attendeeEmails
                 .map(email => {
                     const name = email.split('@')[0];
                     const parts = name.split('.');
