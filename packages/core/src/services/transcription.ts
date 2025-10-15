@@ -1,6 +1,10 @@
 import OpenAI from 'openai';
-import { createReadStream, statSync } from 'fs';
-import { basename } from 'path';
+import { createReadStream, statSync, unlinkSync, mkdirSync, existsSync } from 'fs';
+import { basename, join, dirname } from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 export class TranscriptionService {
   private openai: OpenAI;
@@ -11,6 +15,7 @@ export class TranscriptionService {
 
   /**
    * Transcribe an audio file using OpenAI Whisper API
+   * Automatically splits files larger than 25MB and stitches transcripts together
    * Supports: mp3, mp4, mpeg, mpga, m4a, wav, webm
    */
   async transcribeAudio(audioFilePath: string): Promise<string> {
@@ -19,20 +24,94 @@ export class TranscriptionService {
     const fileSizeMB = stats.size / (1024 * 1024);
 
     if (fileSizeMB > 25) {
-      throw new Error(`Audio file is ${fileSizeMB.toFixed(2)}MB. Whisper API has a 25MB limit. Please split the file or compress it.`);
+      console.log(`File is ${fileSizeMB.toFixed(2)}MB. Auto-splitting into chunks...`);
+      return await this.transcribeLargeFile(audioFilePath, fileSizeMB);
     }
 
+    // File is small enough, transcribe directly
+    return await this.transcribeSingleFile(audioFilePath);
+  }
+
+  /**
+   * Transcribe a single audio file
+   */
+  private async transcribeSingleFile(audioFilePath: string): Promise<string> {
     const audioFile = createReadStream(audioFilePath);
-    const fileName = basename(audioFilePath);
 
     const transcription = await this.openai.audio.transcriptions.create({
       file: audioFile,
       model: 'whisper-1',
-      response_format: 'verbose_json', // Get timestamps and other metadata
-      language: 'en', // Assuming English meetings
+      response_format: 'verbose_json',
+      language: 'en',
     });
 
     return transcription.text;
+  }
+
+  /**
+   * Split large audio file and transcribe each chunk
+   */
+  private async transcribeLargeFile(audioFilePath: string, fileSizeMB: number): Promise<string> {
+    const dir = dirname(audioFilePath);
+    const baseName = basename(audioFilePath, '.webm');
+    const chunksDir = join(dir, `${baseName}_chunks`);
+
+    // Create chunks directory
+    if (!existsSync(chunksDir)) {
+      mkdirSync(chunksDir, { recursive: true });
+    }
+
+    try {
+      // Calculate chunk duration to keep each under 20MB (safe margin)
+      // Estimate: 1 minute of webm ≈ 1MB, so aim for ~15 min chunks
+      const chunkDurationMinutes = 15;
+
+      console.log(`Splitting file into ${chunkDurationMinutes}-minute chunks...`);
+
+      // Use ffmpeg to split the audio file
+      const chunkPattern = join(chunksDir, `chunk_%03d.webm`);
+      await execAsync(
+        `ffmpeg -i "${audioFilePath}" -f segment -segment_time ${chunkDurationMinutes * 60} -c copy "${chunkPattern}"`
+      );
+
+      // Get list of chunk files
+      const { stdout } = await execAsync(`ls "${chunksDir}"/chunk_*.webm`);
+      const chunkFiles = stdout.trim().split('\n').filter(f => f);
+
+      console.log(`Created ${chunkFiles.length} chunks. Transcribing each...`);
+
+      // Transcribe each chunk
+      const transcripts: string[] = [];
+      for (let i = 0; i < chunkFiles.length; i++) {
+        const chunkFile = chunkFiles[i];
+        console.log(`Transcribing chunk ${i + 1}/${chunkFiles.length}...`);
+
+        const chunkTranscript = await this.transcribeSingleFile(chunkFile);
+        transcripts.push(chunkTranscript);
+      }
+
+      // Stitch transcripts together
+      const fullTranscript = transcripts.join(' ');
+
+      // Clean up chunk files
+      console.log('Cleaning up temporary chunk files...');
+      for (const chunkFile of chunkFiles) {
+        unlinkSync(chunkFile);
+      }
+
+      // Try to remove chunks directory (will only work if empty)
+      try {
+        await execAsync(`rmdir "${chunksDir}"`);
+      } catch (e) {
+        // Ignore if directory not empty
+      }
+
+      return fullTranscript;
+
+    } catch (error) {
+      console.error('Error splitting/transcribing large file:', error);
+      throw new Error(`Failed to process large audio file: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 
   /**
