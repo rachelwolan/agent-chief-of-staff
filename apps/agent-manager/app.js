@@ -354,9 +354,10 @@ function getMeetingLink(event, eventColor, isTask) {
     if (meetingUrl) {
         // Clean up URL (remove trailing punctuation)
         meetingUrl = meetingUrl.replace(/[,;.)\]]+$/, '');
-        return `<a href="${meetingUrl}" target="_blank" class="meeting-link" style="background: ${eventColor};">${linkLabel}</a>`;
+        // Use consistent teal color for all meeting links
+        return `<a href='${meetingUrl}' target='_blank' class='meeting-link' style='background: #46D6DB;'>${linkLabel}</a>`;
     } else if (isTask) {
-        return `<button class="meeting-link" onclick="markTaskDone('${event.id}'); return false;">Done</button>`;
+        return `<button class='meeting-link' onclick="markTaskDone('${event.id}'); return false;">Done</button>`;
     }
 
     return '';
