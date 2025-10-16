@@ -1000,16 +1000,49 @@ window.onclick = function(event) {
 let currentCard = null;
 let isCardFlipped = false;
 
+// localStorage helpers for offline persistence
+function loadFromLocalStorage(dateStr) {
+    try {
+        const stored = localStorage.getItem(`index-card-${dateStr}`);
+        return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        return null;
+    }
+}
+
+function saveToLocalStorage(dateStr, card) {
+    try {
+        localStorage.setItem(`index-card-${dateStr}`, JSON.stringify(card));
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+    }
+}
+
 async function loadIndexCard() {
     try {
         // Use local timezone for date (not UTC)
         const dateStr = formatLocalDate(currentDate);
         const response = await fetch(`/api/index-card/${dateStr}`);
         currentCard = await response.json();
+
+        // If no card from server, try localStorage
+        if (!currentCard) {
+            currentCard = loadFromLocalStorage(dateStr);
+        }
+
+        // If successfully loaded from server, clear old localStorage
+        if (currentCard) {
+            localStorage.removeItem(`index-card-${dateStr}`);
+        }
+
         renderIndexCard();
     } catch (error) {
         console.error('Error loading index card:', error);
-        renderIndexCard(); // Render blank card
+        // Try to load from localStorage as fallback
+        const dateStr = formatLocalDate(currentDate);
+        currentCard = loadFromLocalStorage(dateStr);
+        renderIndexCard(); // Render blank card or localStorage card
     }
 }
 
@@ -1050,16 +1083,22 @@ function renderIndexCard() {
     else dateLabel = `${dateStr} (${Math.abs(daysDiff)} days ago)`;
 
     if (!currentCard) {
-        // Create new blank card
+        // Create new blank card with 5 empty slots
         currentCard = {
             date: formatLocalDate(currentDate),
             createdAt: new Date().toISOString(),
-            priorities: ['', '', ''],
-            completed: [false, false, false],
+            priorities: ['', '', '', '', ''],
+            completed: [false, false, false, false, false],
             antiTodo: [],
             wasSuccessful: false,
             completedAt: null
         };
+    }
+
+    // Ensure card has exactly 5 priority slots (migrate old 3-slot cards)
+    while (currentCard.priorities.length < 5) {
+        currentCard.priorities.push('');
+        currentCard.completed.push(false);
     }
 
     const cardHTML = `
@@ -1069,21 +1108,35 @@ function renderIndexCard() {
                 <div class="card-face card-front">
                     <div class="card-header">
                         <h3>Top Priorities for ${currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h3>
+                        <span class="priority-counter">${currentCard.priorities.filter(p => p.trim() !== '').length} of 5</span>
                         <button class="btn-flip-icon" onclick="flipCard()" title="Flip card">⟲</button>
                     </div>
                     <div class="card-priorities">
                         ${currentCard.priorities
-                            .map((priority, index) => ({ priority, index }))
-                            .filter(item => item.priority.trim() !== '')
-                            .map(item => `
-                                <div class="priority-item">
-                                    <span>✓</span>
-                                    <span>${item.priority}</span>
-                                    <button class="btn-remove" onclick="removePriority(${item.index})">×</button>
-                                </div>
-                            `).join('')}
+                            .map((priority, index) => {
+                                const isEmpty = priority.trim() === '';
+                                if (isEmpty) {
+                                    return `
+                                        <div class="priority-item priority-placeholder" onclick="focusAddInput()">
+                                            <span class="priority-number">${index + 1}</span>
+                                            <span class="priority-placeholder-text">Priority ${index + 1}</span>
+                                        </div>
+                                    `;
+                                } else {
+                                    return `
+                                        <div class="priority-item">
+                                            <input type="checkbox"
+                                                ${currentCard.completed[index] ? 'checked' : ''}
+                                                onchange="togglePriority(${index})"
+                                                class="priority-checkbox">
+                                            <span class="priority-text ${currentCard.completed[index] ? 'completed' : ''}">${priority}</span>
+                                            <button class="btn-remove" onclick="removePriority(${index})" title="Remove">×</button>
+                                        </div>
+                                    `;
+                                }
+                            }).join('')}
                     </div>
-                    ${currentCard.priorities.length < 5 ? `
+                    ${currentCard.priorities.filter(p => p.trim() !== '').length < 5 ? `
                         <div class="priority-add">
                             <input
                                 type="text"
@@ -1134,6 +1187,13 @@ function flipCard() {
     document.querySelector('.index-card').classList.toggle('flipped');
 }
 
+function focusAddInput() {
+    const input = document.getElementById('priority-input');
+    if (input) {
+        input.focus();
+    }
+}
+
 function updatePriority(index, value) {
     currentCard.priorities[index] = value;
     autoSaveCard();
@@ -1155,16 +1215,22 @@ function addPriority() {
     const input = document.getElementById('priority-input');
     const value = input.value.trim();
 
-    if (value && currentCard.priorities.length < 5) {
-        currentCard.priorities.push(value);
-        input.value = '';
-        renderIndexCard();
-        autoSaveCard();
+    if (value) {
+        // Find first empty slot and fill it
+        const emptyIndex = currentCard.priorities.findIndex(p => p.trim() === '');
+        if (emptyIndex !== -1) {
+            currentCard.priorities[emptyIndex] = value;
+            input.value = '';
+            renderIndexCard();
+            autoSaveCard();
+        }
     }
 }
 
 function removePriority(index) {
-    currentCard.priorities.splice(index, 1);
+    // Clear the slot instead of removing it
+    currentCard.priorities[index] = '';
+    currentCard.completed[index] = false;
     renderIndexCard();
     autoSaveCard();
 }
@@ -1197,28 +1263,34 @@ async function autoSaveCard() {
 
     saveTimeout = setTimeout(async () => {
         try {
-            // Filter out empty priorities for saving
-            const cardToSave = {
-                ...currentCard,
-                priorities: currentCard.priorities.filter(p => p.trim() !== ''),
-                completed: currentCard.completed.slice(0, currentCard.priorities.filter(p => p.trim() !== '').length)
+            // Save complete card (including empty slots) for UI state
+            const cardToSave = { ...currentCard };
+
+            // Always save to localStorage first (offline backup)
+            saveToLocalStorage(cardToSave.date, cardToSave);
+
+            // Filter out empty priorities for server storage (cleaner data)
+            const serverCard = {
+                ...cardToSave,
+                priorities: cardToSave.priorities.filter(p => p.trim() !== ''),
+                completed: cardToSave.completed.slice(0, cardToSave.priorities.filter(p => p.trim() !== '').length)
             };
 
-            if (cardToSave.priorities.length === 0) {
-                return; // Don't save empty cards
-            }
-
+            // Save to server even if empty (allows clearing all priorities)
             const response = await fetch('/api/index-card', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cardToSave)
+                body: JSON.stringify(serverCard)
             });
 
             if (response.ok) {
                 console.log('Card autosaved ✓');
+                // Clear localStorage backup after successful server save
+                localStorage.removeItem(`index-card-${cardToSave.date}`);
             }
         } catch (error) {
             console.error('Error autosaving card:', error);
+            console.log('Card saved to localStorage (offline mode)');
         }
     }, 500); // Wait 500ms after last change before saving
 }
