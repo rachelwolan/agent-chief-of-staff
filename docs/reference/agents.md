@@ -252,7 +252,7 @@ node dist/cli.js list
 5. **Test**: `node dist/cli.js quick agents/my-agent.md`
 6. **Run**: `node dist/cli.js run agents/my-agent.md`
 
-See [AI Dev Tasks](../guides/ai-dev-tasks.md) for structured workflow.
+See [AI Dev Tasks](../../ai-dev-tasks/README.md) for structured workflow, or use `/create-prd`.
 
 ## Agent Best Practices
 
@@ -276,7 +276,7 @@ See [AI Dev Tasks](../guides/ai-dev-tasks.md) for structured workflow.
 
 ### Add New Service Integration
 
-1. Create service class in `src/services/`
+1. Create service class in `packages/core/src/services/`
 2. Implement authentication (OAuth, API key, etc.)
 3. Add methods for data access
 4. Use in agent implementations
@@ -285,16 +285,16 @@ See [AI Dev Tasks](../guides/ai-dev-tasks.md) for structured workflow.
 ### Add New Agent
 
 1. Define spec in `/agents/`
-2. Optionally add custom logic in `/src/agents/`
+2. Optionally add custom logic in `/packages/core/src/agents/`
 3. Test thoroughly
 4. Document usage
 
 ### Add Web Dashboard Feature
 
-1. Add API endpoint in `agent-manager/server.js`
-2. Add UI in `agent-manager/index.html`
-3. Add logic in `agent-manager/app.js`
-4. Add styles in `agent-manager/styles-new.css`
+1. Add API endpoint in `apps/agent-manager/server.js`
+2. Add UI in `apps/agent-manager/index.html`
+3. Add logic in `apps/agent-manager/app.js`
+4. Add styles in `apps/agent-manager/styles-new.css`
 
 ## Agent Examples
 

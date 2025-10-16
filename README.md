@@ -100,7 +100,17 @@ All workflows in `/ai-dev-tasks/` - use with Claude Code slash commands:
 - **[Agents](docs/reference/agents.md)** - All agent specs
 
 ### Personal Resources
-Located in [docs/personal/](docs/personal/) - Your frameworks, prep materials, and product context
+Your personal frameworks and context in [docs/personal/](docs/personal/):
+- **[Personal Resources Index](docs/personal/personal-resources.md)** - Overview
+- **[CPO Prep](docs/personal/cpo-prep-general-about-me.md)** - Executive materials
+- **[AEO Masterclass](docs/personal/aeo-masterclass.md)** - Communication frameworks
+- **[Webflow Products](docs/personal/webflow_products_overview.md)** - Product suite
+- **PDFs**: Decker method communication frameworks
+
+### Examples
+Sample inputs and outputs:
+- **[Podcast Prep Example](docs/examples/podcast-prep-example.md)** - Sample agent output
+- **[Tableau Input](docs/examples/tableau-monitor-input.json)** - Monitoring configuration
 
 ## 🔧 Key Commands
 
@@ -200,9 +210,10 @@ Features:
 
 ## 📖 Learn More
 
-- **[Full Documentation Index](docs/README.md)** - Complete documentation
-- **[Architecture](docs/reference/architecture.md)** - System design
-- **[AI Dev Tasks](docs/guides/ai-dev-tasks.md)** - Development workflow
+- **[Quick Start Guide](docs/quick-start.md)** - Get running in 5 minutes
+- **[Setup Guide](docs/setup.md)** - Complete configuration
+- **[Architecture](docs/reference/architecture.md)** - System design and data flow
+- **[AI Dev Tasks](ai-dev-tasks/README.md)** - Structured PRD workflow
 
 ## 🤝 Contributing
 

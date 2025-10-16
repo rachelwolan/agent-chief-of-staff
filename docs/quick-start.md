@@ -30,7 +30,7 @@ npm run build
 ### Option A: Web Dashboard
 
 ```bash
-cd agent-manager && node server.js
+cd apps/agent-manager && node server.js
 ```
 
 Open http://localhost:3000
@@ -66,7 +66,7 @@ node dist/cli.js quick agents/meeting-prep.md
    npm run dossier:generate
    ```
 
-See [Dossier Guide](guides/dossier.md) for details.
+See [Create Dossier](../ai-dev-tasks/create-dossier.md) workflow or use `/create-dossier`.
 
 ### Add Calendar Intelligence
 
@@ -88,5 +88,5 @@ For complete configuration of all features, see [Setup Guide](setup.md).
 ## Help
 
 - [All Commands](reference/commands.md)
-- [Troubleshooting](guides/troubleshooting.md)
-- [Full Documentation](README.md)
+- [Troubleshooting](../ai-dev-tasks/troubleshoot.md) - or use `/troubleshoot`
+- [Full Documentation](../README.md)

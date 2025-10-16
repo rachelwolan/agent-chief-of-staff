@@ -8,44 +8,32 @@ Quick reference for project structure and key locations.
 /
 ├── agents/              # Agent markdown specifications
 ├── ai-dev-tasks/        # PRD workflow templates  
-├── tasks/               # Generated PRDs & task lists
-│
-├── src/                 # TypeScript source code
-│   ├── lib/            # Core libraries (agent-runner, transcription)
-│   ├── services/       # External integrations (Gmail, Calendar, etc.)
-│   ├── agents/         # Agent implementations
-│   ├── mcp-servers/    # MCP server implementations
-│   └── schedulers/     # Scheduled jobs (empty - future)
-│
-├── agent-manager/       # Web dashboard (Express server)
-│   ├── server.js       # Backend API
-│   ├── app.js          # Frontend logic
-│   ├── index.html      # Main dashboard
-│   └── *.css           # Styles
-│
+├── apps/                # Executable applications
+│   ├── agent-manager/   # Web dashboard (Express server + static assets)
+│   └── start-slack-bot.ts
+├── packages/
+│   └── core/            # Shared TypeScript source
+│       ├── src/         # Libraries, services, CLIs
+│       └── tests/       # Unit / integration tests
+├── tooling/             # Helper scripts & automation
+│   └── scripts/
 ├── docs/                # All documentation
-│   ├── guides/         # Feature guides (4 files)
-│   ├── reference/      # Technical docs (3 files)
-│   ├── workflows/      # Step-by-step guides (3 files)
+│   ├── reference/      # Technical docs (commands, architecture, agents)
 │   ├── personal/       # Your personal resources
 │   └── examples/       # Sample files
-│
+├── ai-dev-tasks/        # AI-executable workflows (slash commands)
+├── tasks/               # Generated PRDs & task lists
 ├── logs/                # Execution logs (git-ignored)
 │   ├── dossiers/       # Daily dossiers
 │   └── index-cards/    # Daily focus cards
-│
 ├── data/                # Runtime data (git-ignored)
 │   └── prep-cards/     # Meeting prep materials
-│
 ├── dist/                # Compiled JavaScript (git-ignored)
 ├── venv/                # Python virtualenv for Whisper (git-ignored)
-│
 ├── .claude/             # Claude Code configuration
 │   ├── commands/       # Custom slash commands
 │   └── settings.local.json
-│
-└── scripts/             # Helper scripts
-    └── launch-manager.sh
+└── node_modules/        # Dependencies (git-ignored)
 ```
 
 ## 📍 Key Files
@@ -59,10 +47,10 @@ Quick reference for project structure and key locations.
 - `tsconfig.json` - TypeScript config
 
 ### Entry Points
-- `src/cli.ts` - Main CLI for running agents
-- `src/cli-calendar.ts` - Calendar commands
-- `src/cli-dossier.ts` - Dossier commands
-- `agent-manager/server.js` - Web dashboard server
+- `packages/core/src/cli.ts` - Main CLI for running agents
+- `packages/core/src/cli-calendar.ts` - Calendar commands
+- `packages/core/src/cli-dossier.ts` - Dossier commands
+- `apps/agent-manager/server.js` - Web dashboard server
 
 ## 🎯 Quick Navigation
 
@@ -70,17 +58,17 @@ Quick reference for project structure and key locations.
 - Coding patterns: `.cursorrules`
 - TypeScript config: `tsconfig.json`
 - Dependencies: `package.json`
-- Core logic: `src/lib/agent-runner.ts`
+- Core logic: `packages/core/src/lib/agent-runner.ts`
 
 ### For Documentation
-- Start here: `docs/README.md`
+- Start here: `README.md`
 - Quick setup: `docs/quick-start.md`
 - Full setup: `docs/setup.md`
-- Guides: `docs/guides/`
+- AI workflows: `ai-dev-tasks/`
 
 ### For Agents
 - Specifications: `agents/*.md`
-- Implementations: `src/agents/*.ts`
+- Implementations: `packages/core/src/agents/*.ts`
 - Logs: `logs/`
 
 ### For AI Workflows
@@ -119,7 +107,7 @@ data/
 ## 🎨 Web Dashboard Structure
 
 ```
-agent-manager/
+apps/agent-manager/
 ├── server.js              # Express backend
 ├── app.js                 # Frontend JavaScript
 ├── index.html             # Main dashboard UI
@@ -161,15 +149,15 @@ agent-manager/
 ### Adding Features
 1. Use `/create-prd` for requirements
 2. Create agent spec in `agents/`
-3. Implement in `src/`
+3. Implement in `packages/core/src/`
 4. Test with `quick` command
-5. Document in `docs/guides/`
+5. Document in `docs/` or create AI workflow in `ai-dev-tasks/`
 
 ### Updating Documentation
-1. Find file in `docs/[category]/`
+1. Find file in `docs/` or `ai-dev-tasks/`
 2. Edit once (no duplication)
 3. Verify cross-references
-4. Update `docs/README.md` if needed
+4. Update `README.md` if needed
 
 ### Deploying Changes
 1. `npm run build` - Compile TypeScript
@@ -179,4 +167,4 @@ agent-manager/
 
 ---
 
-*For detailed information, see [docs/README.md](docs/README.md)*
+*For detailed information, see [README.md](README.md)*

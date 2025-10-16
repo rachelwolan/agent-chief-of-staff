@@ -73,7 +73,7 @@ node dist/cli.js run agents/agent-name.md
 \`\`\`
 
 ### Via Web Dashboard
-1. Start the dashboard: `cd agent-manager && node server.js`
+1. Start the dashboard: `cd apps/agent-manager && node server.js`
 2. Open http://localhost:3000
 3. Select and run agents from the UI
 
@@ -113,10 +113,10 @@ node dist/cli.js run agents/agent-name.md
 
 ## 📚 Related Documentation
 
-- **[Quick Reference](../docs/guides/quick-reference.md)** - Essential commands
-- **[Agent Manager Guide](../docs/guides/agent-manager-guide.md)** - Web dashboard usage
-- **[System Overview](../docs/specs/architecture/system-overview.md)** - Architecture details
-- **[Claude Development Guide](../docs/guides/claude-development-guide.md)** - Development guidelines
+- **[Commands Reference](../docs/reference/commands.md)** - All CLI commands
+- **[Architecture](../docs/reference/architecture.md)** - System design and data flow
+- **[Agents Reference](../docs/reference/agents.md)** - Detailed agent documentation
+- **[AI Dev Tasks](../ai-dev-tasks/README.md)** - Structured development workflow
 
 ## 🔗 Integration
 
@@ -132,4 +132,3 @@ See `/docs/setup/` for integration configuration.
 ---
 
 *For more information, see the [main README](../README.md)*
-

@@ -211,7 +211,7 @@ npm run calendar:today
 npm run dossier:generate
 
 # Start web dashboard
-cd agent-manager && node server.js
+cd apps/agent-manager && node server.js
 ```
 
 Open http://localhost:3000
@@ -257,10 +257,10 @@ Open http://localhost:3000
 ## Next Steps
 
 - [Quick Start Guide](quick-start.md) - Get running in 5 minutes
-- [Dossier Guide](guides/dossier.md) - Learn newsletter analysis
+- [Create Dossier](../ai-dev-tasks/create-dossier.md) - Newsletter analysis workflow (or use `/create-dossier`)
 - [Commands Reference](reference/commands.md) - All available commands
-- [Troubleshooting](guides/troubleshooting.md) - Common issues
+- [Troubleshooting](../ai-dev-tasks/troubleshoot.md) - Common issues (or use `/troubleshoot`)
 
 ---
 
-**Need Help?** Check [guides/troubleshooting.md](guides/troubleshooting.md) or review the [docs/README.md](README.md) index.
+**Need Help?** Use `/troubleshoot` or check [../ai-dev-tasks/troubleshoot.md](../ai-dev-tasks/troubleshoot.md), or review the [main README](../README.md).
