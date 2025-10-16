@@ -83,15 +83,15 @@
   - [x] 5.4 Update `/docs/README.md` to reflect new ai-dev-tasks structure
   - [x] 5.5 Search codebase for any other references to moved files and update them
 
-- [ ] 6.0 Clean up original files from docs directories
-  - [ ] 6.1 Delete `/docs/workflows/calendar-dashboard.md`
-  - [ ] 6.2 Delete `/docs/workflows/daily-briefing.md`
-  - [ ] 6.3 Delete `/docs/workflows/snowflake-monitor.md`
-  - [ ] 6.4 Delete `/docs/workflows/tableau-monitor.md`
-  - [ ] 6.5 Delete `/docs/guides/dossier.md`
-  - [ ] 6.6 Delete `/docs/guides/meeting-processor.md`
-  - [ ] 6.7 Delete `/docs/guides/web-dashboard.md`
-  - [ ] 6.8 Delete `/docs/guides/troubleshooting.md`
-  - [ ] 6.9 Delete `/docs/guides/ai-dev-tasks-guide.md`
-  - [ ] 6.10 Delete `/docs/guides/ai-dev-tasks.md`
-  - [ ] 6.11 Verify `/docs/workflows/` and `/docs/guides/` are empty or contain only remaining documentation files
+- [x] 6.0 Clean up original files from docs directories
+  - [x] 6.1 Delete `/docs/workflows/calendar-dashboard.md`
+  - [x] 6.2 Delete `/docs/workflows/daily-briefing.md`
+  - [x] 6.3 Delete `/docs/workflows/snowflake-monitor.md`
+  - [x] 6.4 Delete `/docs/workflows/tableau-monitor.md`
+  - [x] 6.5 Delete `/docs/guides/dossier.md`
+  - [x] 6.6 Delete `/docs/guides/meeting-processor.md`
+  - [x] 6.7 Delete `/docs/guides/web-dashboard.md`
+  - [x] 6.8 Delete `/docs/guides/troubleshooting.md`
+  - [x] 6.9 Delete `/docs/guides/ai-dev-tasks-guide.md`
+  - [x] 6.10 Delete `/docs/guides/ai-dev-tasks.md`
+  - [x] 6.11 Verify `/docs/workflows/` and `/docs/guides/` are empty or contain only remaining documentation files
