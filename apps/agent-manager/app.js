@@ -1446,9 +1446,9 @@ let recordingStartTime = null;
 let recordingTimer = null;
 let meetingContext = { title: '', attendees: '' };
 
-// Keyboard shortcut: Cmd+Shift+R or Ctrl+Shift+R
+// Keyboard shortcut: Cmd+K or Ctrl+K
 document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'R') {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         toggleRecordingWidget();
     }
