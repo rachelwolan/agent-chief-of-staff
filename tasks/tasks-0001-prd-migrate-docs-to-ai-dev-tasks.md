@@ -60,11 +60,11 @@
   - [x] 2.3 Read `/docs/guides/web-dashboard.md` and convert to "Rule: Launch Web Dashboard" format in `/ai-dev-tasks/launch-web-dashboard.md`
   - [x] 2.4 Read `/docs/guides/troubleshooting.md` and convert to "Rule: Troubleshoot System Issues" format in `/ai-dev-tasks/troubleshoot.md`
 
-- [ ] 3.0 Merge ai-dev-tasks documentation into README.md
-  - [ ] 3.1 Read `/docs/guides/ai-dev-tasks-guide.md` and `/docs/guides/ai-dev-tasks.md` to extract relevant content
-  - [ ] 3.2 Read current `/ai-dev-tasks/README.md` to understand existing structure
-  - [ ] 3.3 Merge content from ai-dev-tasks guides into README.md, adding a new section listing all 8 migrated workflows with descriptions
-  - [ ] 3.4 Ensure README.md includes usage examples for new workflows (e.g., "Use @create-dossier.md to generate daily dossier")
+- [x] 3.0 Merge ai-dev-tasks documentation into README.md
+  - [x] 3.1 Read `/docs/guides/ai-dev-tasks-guide.md` and `/docs/guides/ai-dev-tasks.md` to extract relevant content
+  - [x] 3.2 Read current `/ai-dev-tasks/README.md` to understand existing structure
+  - [x] 3.3 Merge content from ai-dev-tasks guides into README.md, adding a new section listing all 8 migrated workflows with descriptions
+  - [x] 3.4 Ensure README.md includes usage examples for new workflows (e.g., "Use @create-dossier.md to generate daily dossier")
 
 - [ ] 4.0 Create custom slash commands for all migrated workflows
   - [ ] 4.1 Create `.claude/commands/create-calendar-dashboard.md` with reference to `/ai-dev-tasks/create-calendar-dashboard.md`

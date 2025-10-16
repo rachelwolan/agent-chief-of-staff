@@ -93,9 +93,59 @@ If you'd like to see this in action, I demonstrated it on [Claire Vo's "How I AI
 
 ## 🗂️ Files in this Repository
 
+### Core Workflow Files
+
 * **`create-prd.md`**: Guides the AI in generating a Product Requirement Document for your feature.
 * **`generate-tasks.md`**: Takes a PRD markdown file as input and helps the AI break it down into a detailed, step-by-step implementation task list.
 * **`process-task-list.md`**: Instructs the AI on how to process the generated task list, tackling one task at a time and waiting for your approval before proceeding. (This file also contains logic for the AI to mark tasks as complete).
+
+### Chief of Staff Workflow Files
+
+These AI-executable workflows are specific to the Chief of Staff agent system, providing structured processes for executive support tasks:
+
+#### Dashboard & Calendar Workflows
+* **`create-calendar-dashboard.md`**: Build an intelligent calendar dashboard with AI-powered meeting prep, insights, and automation.
+  ```text
+  Use @create-calendar-dashboard.md to build a strategic command center for your calendar
+  ```
+
+* **`create-daily-briefing.md`**: Set up automated daily calendar intelligence with meeting prep and morning briefings.
+  ```text
+  Use @create-daily-briefing.md to automate meeting preparation and daily summaries
+  ```
+
+#### Monitoring Workflows
+* **`monitor-snowflake.md`**: Configure Snowflake dashboard monitoring using MCP server to track business metrics.
+  ```text
+  Use @monitor-snowflake.md to set up automated Snowflake metrics tracking
+  ```
+
+* **`monitor-tableau.md`**: Set up Tableau dashboard monitoring with custom MCP server for data visualization tracking.
+  ```text
+  Use @monitor-tableau.md to configure Tableau dashboard monitoring
+  ```
+
+#### Content & Communication Workflows
+* **`create-dossier.md`**: Generate daily strategic briefings from Gmail newsletters using Claude Sonnet 4.5.
+  ```text
+  Use @create-dossier.md to automatically create daily intelligence reports from newsletters
+  ```
+
+* **`process-meeting.md`**: Analyze meeting transcripts/audio to extract action items and post summaries to Slack.
+  ```text
+  Use @process-meeting.md to transform meeting recordings into structured action plans
+  ```
+
+#### System Management Workflows
+* **`launch-web-dashboard.md`**: Launch the Chief of Staff Agent Manager web interface for visual agent management.
+  ```text
+  Use @launch-web-dashboard.md to start the web dashboard on localhost:3000
+  ```
+
+* **`troubleshoot.md`**: Systematic troubleshooting guide for diagnosing and fixing common system issues.
+  ```text
+  Use @troubleshoot.md when encountering API, integration, or runtime issues
+  ```
 
 ## 🌟 Benefits
 
