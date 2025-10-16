@@ -54,11 +54,11 @@
   - [x] 1.3 Read `/docs/workflows/snowflake-monitor.md` and convert to "Rule: Monitor Snowflake" format in `/ai-dev-tasks/monitor-snowflake.md`
   - [x] 1.4 Read `/docs/workflows/tableau-monitor.md` and convert to "Rule: Monitor Tableau" format in `/ai-dev-tasks/monitor-tableau.md`
 
-- [ ] 2.0 Migrate guide specifications to ai-dev-tasks with "Rule:" format
-  - [ ] 2.1 Read `/docs/guides/dossier.md` and convert to "Rule: Create Daily Dossier" format in `/ai-dev-tasks/create-dossier.md`
-  - [ ] 2.2 Read `/docs/guides/meeting-processor.md` and convert to "Rule: Process Meeting" format in `/ai-dev-tasks/process-meeting.md`
-  - [ ] 2.3 Read `/docs/guides/web-dashboard.md` and convert to "Rule: Launch Web Dashboard" format in `/ai-dev-tasks/launch-web-dashboard.md`
-  - [ ] 2.4 Read `/docs/guides/troubleshooting.md` and convert to "Rule: Troubleshoot System Issues" format in `/ai-dev-tasks/troubleshoot.md`
+- [x] 2.0 Migrate guide specifications to ai-dev-tasks with "Rule:" format
+  - [x] 2.1 Read `/docs/guides/dossier.md` and convert to "Rule: Create Daily Dossier" format in `/ai-dev-tasks/create-dossier.md`
+  - [x] 2.2 Read `/docs/guides/meeting-processor.md` and convert to "Rule: Process Meeting" format in `/ai-dev-tasks/process-meeting.md`
+  - [x] 2.3 Read `/docs/guides/web-dashboard.md` and convert to "Rule: Launch Web Dashboard" format in `/ai-dev-tasks/launch-web-dashboard.md`
+  - [x] 2.4 Read `/docs/guides/troubleshooting.md` and convert to "Rule: Troubleshoot System Issues" format in `/ai-dev-tasks/troubleshoot.md`
 
 - [ ] 3.0 Merge ai-dev-tasks documentation into README.md
   - [ ] 3.1 Read `/docs/guides/ai-dev-tasks-guide.md` and `/docs/guides/ai-dev-tasks.md` to extract relevant content
