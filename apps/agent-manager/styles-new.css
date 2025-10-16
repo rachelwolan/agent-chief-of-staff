@@ -1472,9 +1472,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    margin-bottom: 0;
+    padding-bottom: 12px;
     border-bottom: 2px solid #C8E1F7;
+    height: 50px;
+    box-sizing: border-box;
 }
 
 .card-header h3 {
@@ -1514,15 +1516,18 @@ body {
 }
 
 .card-priorities {
-    margin-bottom: 12px;
+    margin-bottom: 0;
+    margin-top: 4px;
 }
 
 .priority-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px;
-    margin-bottom: 6px;
+    padding: 8px 6px;
+    margin-bottom: 0;
+    height: 38px;
+    box-sizing: border-box;
     background: rgba(80, 81, 249, 0.05);
     border-radius: 4px;
     font-family: 'Courier New', Courier, monospace;
@@ -1611,12 +1616,15 @@ body {
 .priority-add {
     display: flex;
     gap: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    margin-top: 8px;
 }
 
 .priority-add input {
     flex: 1;
     padding: 8px;
+    height: 38px;
+    box-sizing: border-box;
     border: 1px solid var(--border);
     border-radius: 4px;
     font-family: 'Courier New', Courier, monospace;
@@ -1631,6 +1639,8 @@ body {
 
 .priority-add button {
     padding: 8px 16px;
+    height: 38px;
+    box-sizing: border-box;
     background: var(--primary);
     color: white;
     border: none;
