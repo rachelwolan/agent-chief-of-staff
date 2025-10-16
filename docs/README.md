@@ -10,13 +10,28 @@ Complete documentation for Agent Chief of Staff.
 2. **[Setup Guide](setup.md)** - Complete configuration
 3. **[Commands Reference](reference/commands.md)** - All CLI commands
 
-## 📖 Guides
+## 📖 AI-Executable Workflows
 
-### Core Features
-- **[Dossier](guides/dossier.md)** - Newsletter analysis with Claude Sonnet 4.5
-- **[Web Dashboard](guides/web-dashboard.md)** - Using the UI at localhost:3000
-- **[AI Dev Tasks](guides/ai-dev-tasks.md)** - Structured PRD workflow
-- **[Troubleshooting](guides/troubleshooting.md)** - Common issues
+AI-powered workflows available as Claude Code slash commands (in `/ai-dev-tasks/`):
+
+### Dashboard & Calendar
+- **[Create Calendar Dashboard](../ai-dev-tasks/create-calendar-dashboard.md)** - Intelligent calendar with AI prep (`/create-calendar-dashboard`)
+- **[Create Daily Briefing](../ai-dev-tasks/create-daily-briefing.md)** - Automated daily intelligence (`/create-daily-briefing`)
+
+### Monitoring
+- **[Monitor Snowflake](../ai-dev-tasks/monitor-snowflake.md)** - Business metrics tracking (`/monitor-snowflake`)
+- **[Monitor Tableau](../ai-dev-tasks/monitor-tableau.md)** - Dashboard monitoring (`/monitor-tableau`)
+
+### Content & Communication
+- **[Create Dossier](../ai-dev-tasks/create-dossier.md)** - Newsletter analysis with Claude Sonnet 4.5 (`/create-dossier`)
+- **[Process Meeting](../ai-dev-tasks/process-meeting.md)** - Meeting transcription & action items (`/process-meeting`)
+
+### System Management
+- **[Launch Web Dashboard](../ai-dev-tasks/launch-web-dashboard.md)** - Start Agent Manager UI (`/launch-web-dashboard`)
+- **[Troubleshoot](../ai-dev-tasks/troubleshoot.md)** - System diagnostics (`/troubleshoot`)
+
+### Core Workflow
+- **[AI Dev Tasks Overview](../ai-dev-tasks/README.md)** - Structured PRD workflow with `/create-prd`, `/generate-tasks`, `/process-task-list`
 
 ## 📚 Reference
 
@@ -24,13 +39,6 @@ Complete documentation for Agent Chief of Staff.
 - **[Commands](reference/commands.md)** - All CLI commands and options
 - **[Architecture](reference/architecture.md)** - System design and data flow
 - **[Agents](reference/agents.md)** - All agent specifications and usage
-
-## 🔄 Workflows
-
-Step-by-step workflows for specific tasks:
-- **[Tableau Monitor](workflows/tableau-monitor.md)** - Dashboard monitoring setup
-- **[Daily Briefing](workflows/daily-briefing.md)** - Morning routine automation
-- **[Calendar Dashboard](workflows/calendar-dashboard.md)** - Calendar intelligence
 
 ## 👤 Personal Resources
 
@@ -55,41 +63,44 @@ docs/
 ├── quick-start.md           # 5-minute setup
 ├── setup.md                 # Complete setup guide
 │
-├── guides/                  # Feature guides
-│   ├── dossier.md
-│   ├── web-dashboard.md
-│   ├── ai-dev-tasks.md
-│   └── troubleshooting.md
-│
 ├── reference/               # Technical reference
 │   ├── commands.md
 │   ├── architecture.md
 │   └── agents.md
-│
-├── workflows/               # Step-by-step workflows
-│   ├── tableau-monitor.md
-│   ├── daily-briefing.md
-│   └── calendar-dashboard.md
 │
 ├── personal/                # Your personal resources
 │   └── ...
 │
 └── examples/                # Sample files
     └── ...
+
+../ai-dev-tasks/             # AI-executable workflows (migrated from guides/ and workflows/)
+├── README.md                # Workflow documentation
+├── create-prd.md            # Core: Create PRDs
+├── generate-tasks.md        # Core: Generate task lists
+├── process-task-list.md     # Core: Process tasks
+├── create-calendar-dashboard.md
+├── create-daily-briefing.md
+├── monitor-snowflake.md
+├── monitor-tableau.md
+├── create-dossier.md
+├── process-meeting.md
+├── launch-web-dashboard.md
+└── troubleshoot.md
 ```
 
 ## 🔗 Quick Links
 
 - **Main README**: [/README.md](../README.md)
 - **Agents Directory**: [/agents/](../agents/)
-- **Source Code**: [/src/](../src/)
+- **Source Code**: [/packages/core/src/](../packages/core/src/)
 - **AI Dev Tasks**: [/ai-dev-tasks/](../ai-dev-tasks/)
 - **Tasks (PRDs)**: [/tasks/](../tasks/)
 
 ## 🆘 Need Help?
 
 1. Check [Quick Start](quick-start.md) for basics
-2. Review [Troubleshooting](guides/troubleshooting.md) for common issues
+2. Review [Troubleshoot](../ai-dev-tasks/troubleshoot.md) for common issues (or use `/troubleshoot`)
 3. Read [Setup Guide](setup.md) for configuration
 4. Check [Commands Reference](reference/commands.md) for all CLI options
 

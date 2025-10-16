@@ -76,12 +76,12 @@
   - [x] 4.7 Create `.claude/commands/launch-web-dashboard.md` with reference to `/ai-dev-tasks/launch-web-dashboard.md`
   - [x] 4.8 Create `.claude/commands/troubleshoot.md` with reference to `/ai-dev-tasks/troubleshoot.md`
 
-- [ ] 5.0 Update project documentation and references
-  - [ ] 5.1 Update `/CLAUDE.md` to replace references to `/docs/workflows/` and `/docs/guides/` with new `/ai-dev-tasks/` paths
-  - [ ] 5.2 Add new slash commands to CLAUDE.md documentation (list all 8 new commands)
-  - [ ] 5.3 Check and update `/README.md` if it contains references to old documentation paths
-  - [ ] 5.4 Update `/docs/README.md` to reflect new ai-dev-tasks structure
-  - [ ] 5.5 Search codebase for any other references to moved files and update them
+- [x] 5.0 Update project documentation and references
+  - [x] 5.1 Update `/CLAUDE.md` to replace references to `/docs/workflows/` and `/docs/guides/` with new `/ai-dev-tasks/` paths
+  - [x] 5.2 Add new slash commands to CLAUDE.md documentation (list all 8 new commands)
+  - [x] 5.3 Check and update `/README.md` if it contains references to old documentation paths
+  - [x] 5.4 Update `/docs/README.md` to reflect new ai-dev-tasks structure
+  - [x] 5.5 Search codebase for any other references to moved files and update them
 
 - [ ] 6.0 Clean up original files from docs directories
   - [ ] 6.1 Delete `/docs/workflows/calendar-dashboard.md`

@@ -43,7 +43,7 @@ npm run calendar:auth
 
 **Web Dashboard**:
 ```bash
-cd agent-manager && node server.js
+cd apps/agent-manager && node server.js
 ```
 Open http://localhost:3000
 
@@ -61,14 +61,18 @@ npm run calendar:today
 
 ```
 /
-├── agents/          # Agent specifications (markdown)
-├── src/             # TypeScript source code
-├── docs/            # Comprehensive documentation
-├── ai-dev-tasks/    # PRD workflow templates
-├── tasks/           # Generated PRDs & task lists
-├── agent-manager/   # Web dashboard
-├── logs/            # Execution logs (git-ignored)
-└── data/            # Runtime data (git-ignored)
+├── agents/            # Agent specifications (markdown)
+├── apps/
+│   ├── agent-manager/ # Web dashboard
+│   └── start-slack-bot.ts
+├── packages/
+│   └── core/          # Shared TypeScript sources and tests
+├── tooling/           # Developer scripts & automation
+├── docs/              # Comprehensive documentation
+├── ai-dev-tasks/      # PRD workflow templates
+├── tasks/             # Generated PRDs & task lists
+├── logs/              # Execution logs (git-ignored)
+└── data/              # Runtime data (git-ignored)
 ```
 
 ## 📚 Documentation
@@ -77,10 +81,18 @@ npm run calendar:today
 
 ### Core Guides
 - **[Setup](docs/setup.md)** - Complete configuration (Gmail, Calendar, Slack, Tableau)
-- **[Dossier](docs/guides/dossier.md)** - Newsletter analysis with Claude Sonnet 4.5
-- **[Web Dashboard](docs/guides/web-dashboard.md)** - Using the UI
-- **[AI Dev Tasks](docs/guides/ai-dev-tasks.md)** - Structured PRD workflow
-- **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues
+- **[AI Dev Tasks](ai-dev-tasks/README.md)** - Structured PRD workflow and Chief of Staff workflows
+
+### AI-Executable Workflows
+All workflows in `/ai-dev-tasks/` - use with Claude Code slash commands:
+- **[Create Dossier](ai-dev-tasks/create-dossier.md)** - Newsletter analysis (`/create-dossier`)
+- **[Process Meeting](ai-dev-tasks/process-meeting.md)** - Meeting transcription & action items (`/process-meeting`)
+- **[Launch Web Dashboard](ai-dev-tasks/launch-web-dashboard.md)** - Start Agent Manager UI (`/launch-web-dashboard`)
+- **[Troubleshoot](ai-dev-tasks/troubleshoot.md)** - System diagnostics (`/troubleshoot`)
+- **[Monitor Snowflake](ai-dev-tasks/monitor-snowflake.md)** - Business metrics tracking (`/monitor-snowflake`)
+- **[Monitor Tableau](ai-dev-tasks/monitor-tableau.md)** - Dashboard monitoring (`/monitor-tableau`)
+- **[Create Calendar Dashboard](ai-dev-tasks/create-calendar-dashboard.md)** - Intelligent calendar UI (`/create-calendar-dashboard`)
+- **[Create Daily Briefing](ai-dev-tasks/create-daily-briefing.md)** - Automated prep system (`/create-daily-briefing`)
 
 ### Reference
 - **[Commands](docs/reference/commands.md)** - All CLI commands
@@ -134,7 +146,7 @@ Located in `/agents/` directory:
 
 Start the dashboard:
 ```bash
-cd agent-manager && node server.js
+cd apps/agent-manager && node server.js
 ```
 
 Access at **http://localhost:3000**
@@ -197,7 +209,7 @@ Features:
 When adding features:
 1. Use `/create-prd` to define requirements
 2. Create agent spec in `/agents/` if needed
-3. Implement in `/src/`
+3. Implement in `/packages/core/src/`
 4. Test thoroughly
 5. Update documentation in `/docs/`
 
