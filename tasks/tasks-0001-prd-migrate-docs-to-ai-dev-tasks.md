@@ -66,15 +66,15 @@
   - [x] 3.3 Merge content from ai-dev-tasks guides into README.md, adding a new section listing all 8 migrated workflows with descriptions
   - [x] 3.4 Ensure README.md includes usage examples for new workflows (e.g., "Use @create-dossier.md to generate daily dossier")
 
-- [ ] 4.0 Create custom slash commands for all migrated workflows
-  - [ ] 4.1 Create `.claude/commands/create-calendar-dashboard.md` with reference to `/ai-dev-tasks/create-calendar-dashboard.md`
-  - [ ] 4.2 Create `.claude/commands/create-daily-briefing.md` with reference to `/ai-dev-tasks/create-daily-briefing.md`
-  - [ ] 4.3 Create `.claude/commands/monitor-snowflake.md` with reference to `/ai-dev-tasks/monitor-snowflake.md`
-  - [ ] 4.4 Create `.claude/commands/monitor-tableau.md` with reference to `/ai-dev-tasks/monitor-tableau.md`
-  - [ ] 4.5 Create `.claude/commands/create-dossier.md` with reference to `/ai-dev-tasks/create-dossier.md`
-  - [ ] 4.6 Create `.claude/commands/process-meeting.md` with reference to `/ai-dev-tasks/process-meeting.md`
-  - [ ] 4.7 Create `.claude/commands/launch-web-dashboard.md` with reference to `/ai-dev-tasks/launch-web-dashboard.md`
-  - [ ] 4.8 Create `.claude/commands/troubleshoot.md` with reference to `/ai-dev-tasks/troubleshoot.md`
+- [x] 4.0 Create custom slash commands for all migrated workflows
+  - [x] 4.1 Create `.claude/commands/create-calendar-dashboard.md` with reference to `/ai-dev-tasks/create-calendar-dashboard.md`
+  - [x] 4.2 Create `.claude/commands/create-daily-briefing.md` with reference to `/ai-dev-tasks/create-daily-briefing.md`
+  - [x] 4.3 Create `.claude/commands/monitor-snowflake.md` with reference to `/ai-dev-tasks/monitor-snowflake.md`
+  - [x] 4.4 Create `.claude/commands/monitor-tableau.md` with reference to `/ai-dev-tasks/monitor-tableau.md`
+  - [x] 4.5 Create `.claude/commands/create-dossier.md` with reference to `/ai-dev-tasks/create-dossier.md`
+  - [x] 4.6 Create `.claude/commands/process-meeting.md` with reference to `/ai-dev-tasks/process-meeting.md`
+  - [x] 4.7 Create `.claude/commands/launch-web-dashboard.md` with reference to `/ai-dev-tasks/launch-web-dashboard.md`
+  - [x] 4.8 Create `.claude/commands/troubleshoot.md` with reference to `/ai-dev-tasks/troubleshoot.md`
 
 - [ ] 5.0 Update project documentation and references
   - [ ] 5.1 Update `/CLAUDE.md` to replace references to `/docs/workflows/` and `/docs/guides/` with new `/ai-dev-tasks/` paths
