@@ -1101,6 +1101,10 @@ function renderIndexCard() {
         currentCard.completed.push(false);
     }
 
+    // Calculate how many slots to display (default 3, expand to 5 as needed)
+    const filledCount = currentCard.priorities.filter(p => p.trim() !== '').length;
+    const slotsToShow = Math.max(3, Math.min(5, filledCount + 1));
+
     const cardHTML = `
         <div class="index-card-wrapper">
             <div class="index-card ${isCardFlipped ? 'flipped' : ''}">
@@ -1108,11 +1112,12 @@ function renderIndexCard() {
                 <div class="card-face card-front">
                     <div class="card-header">
                         <h3>Top Priorities for ${currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h3>
-                        <span class="priority-counter">${currentCard.priorities.filter(p => p.trim() !== '').length} of 5</span>
+                        <span class="priority-counter">${filledCount} of ${slotsToShow}</span>
                         <button class="btn-flip-icon" onclick="flipCard()" title="Flip card">⟲</button>
                     </div>
                     <div class="card-priorities">
                         ${currentCard.priorities
+                            .slice(0, slotsToShow)
                             .map((priority, index) => {
                                 const isEmpty = priority.trim() === '';
                                 if (isEmpty) {
