@@ -16,7 +16,7 @@ Agent Chief of Staff is a spec-driven AI agent system that processes markdown-de
        │              │              │
        ▼              ▼              ▼
 ┌─────────────────────────────────────────────────────┐
-│          Agent Runner (src/lib/agent-runner.ts)     │
+│   Agent Runner (packages/core/src/lib/agent-runner.ts)│
 │  - Loads agent specs (markdown)                     │
 │  - Validates input (Zod schemas)                    │
 │  - Substitutes template variables                   │
@@ -69,7 +69,7 @@ You are {{role}}. Your task is {{task}}...
 
 **Key Pattern**: Template variables use `{{variable}}` syntax for runtime substitution.
 
-### 2. Agent Runner (`src/lib/agent-runner.ts`)
+### 2. Agent Runner (`packages/core/src/lib/agent-runner.ts`)
 
 Central orchestration engine:
 - Loads and parses agent specs
@@ -79,7 +79,7 @@ Central orchestration engine:
 - Validates output against schema
 - Logs execution to `/logs/`
 
-### 3. Services (`src/services/`)
+### 3. Services (`packages/core/src/services/`)
 
 Integration adapters for external services:
 - `gmail.ts` - Personal Gmail OAuth, newsletter extraction
@@ -88,7 +88,7 @@ Integration adapters for external services:
 - `article-fetcher.ts` - Web scraping with Readability
 - `tableau-api.ts` - Tableau REST API client
 
-### 4. CLI (`src/cli.ts`)
+### 4. CLI (`packages/core/src/cli.ts`)
 
 Commander.js interface:
 ```bash
@@ -97,7 +97,7 @@ node dist/cli.js quick agents/meeting-prep.md  # Test
 node dist/cli.js list                          # List agents
 ```
 
-### 5. Web Dashboard (`agent-manager/`)
+### 5. Web Dashboard (`apps/agent-manager/`)
 
 Express server on port 3000:
 - Daily calendar view
@@ -137,15 +137,16 @@ Express server on port 3000:
 ```
 /
 ├── agents/              # Agent markdown specs
-├── src/                 # TypeScript source
-│   ├── lib/            # Core libraries
-│   ├── services/       # External integrations
-│   ├── agents/         # Agent implementations
-│   └── mcp-servers/    # MCP server implementations
-├── docs/               # Documentation
-├── ai-dev-tasks/       # PRD workflow templates
-├── tasks/              # Generated PRDs & task lists
-├── agent-manager/      # Web dashboard
+├── apps/
+│   └── agent-manager/   # Web dashboard
+├── packages/
+│   └── core/
+│       ├── src/         # Libraries, services, CLIs
+│       └── tests/       # Unit/integration tests
+├── tooling/             # Developer scripts
+├── docs/                # Documentation
+├── ai-dev-tasks/        # PRD workflow templates
+├── tasks/               # Generated PRDs & task lists
 ├── logs/               # Execution logs (ignored)
 └── data/               # Runtime data (ignored)
 ```
@@ -229,7 +230,7 @@ Current design handles:
 
 Add new agents by:
 1. Creating new `.md` spec in `/agents/`
-2. Optionally implementing custom logic in `/src/agents/`
+2. Optionally implementing custom logic in `/packages/core/src/agents/`
 3. Testing with `quick` command
 4. Running with `run` command
 

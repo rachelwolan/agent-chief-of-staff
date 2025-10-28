@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Business Health Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #1a1d23;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .date-selector label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .date-selector input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-query {
+            padding: 8px 20px;
+            background: #5051f9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .btn-query:hover {
+            background: #3839d4;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1d23;
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .metric-change.positive {
+            color: #10b981;
+        }
+
+        .metric-change.negative {
+            color: #ef4444;
+        }
+
+        .metric-subvalue {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1d23;
+            margin-bottom: 20px;
+        }
+
+        .sql-query {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            color: #475569;
+            overflow-x: auto;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .attribution-split {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .attribution-item {
+            flex: 1;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .attribution-item-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .attribution-item-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1d23;
+        }
+
+        .attribution-item-pct {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .funnel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .funnel-stage {
+            background: linear-gradient(to right, #5051f9, #6b6cff);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .funnel-stage:nth-child(2) {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            margin-left: 40px;
+        }
+
+        .funnel-stage:nth-child(3) {
+            background: linear-gradient(to right, #f093fb, #f5576c);
+            margin-left: 80px;
+        }
+
+        .funnel-stage:nth-child(4) {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin-left: 120px;
+        }
+
+        .funnel-stage-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .funnel-stage-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .instructions {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .instructions p {
+            color: #78350f;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .instructions code {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Core Business Health</h1>
+            <p class="subtitle">Growth metrics from report__kpi_daily</p>
+            <div class="date-selector">
+                <label>Target Date:</label>
+                <input type="date" id="target-date" value="">
+                <button class="btn-query" onclick="fetchDataForDate()">Refresh Data</button>
+            </div>
+        </header>
+
+        <div class="instructions" id="status-banner">
+            <h3>📡 Live Data Connection</h3>
+            <p id="connection-status">Connecting to Snowflake via MCP...</p>
+        </div>
+
+        <!-- Yesterday's Key Metrics -->
+        <h2 style="margin-bottom: 20px; color: #1a1d23; font-size: 20px;">📊 Yesterday's Performance</h2>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Signups</div>
+                <div class="metric-value" id="total-signups">1,234</div>
+                <div class="metric-change positive">
+                    <span>↑ 6.4%</span>
+                    <span style="color: #64748b;">vs last week</span>
+                </div>
+                <div class="attribution-split">
+                    <div class="attribution-item">
+                        <div class="attribution-item-label">Paid</div>
+                        <div class="attribution-item-value">456</div>
+                        <div class="attribution-item-pct">37%</div>
+                    </div>
+                    <div class="attribution-item">
+                        <div class="attribution-item-label">Organic</div>
+                        <div class="attribution-item-value">778</div>
+                        <div class="attribution-item-pct">63%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">First Sites Created</div>
+                <div class="metric-value" id="first-sites">654</div>
+                <div class="metric-subvalue">53% of signups</div>
+                <div class="metric-change positive">
+                    <span>↑ 8.2%</span>
+                    <span style="color: #64748b;">vs last week</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">First-Time Conversions</div>
+                <div class="metric-value" id="ftc-total">42</div>
+                <div class="metric-subvalue">
+                    7-day: 38 | 30-day: 40
+                </div>
+                <div class="metric-change positive">
+                    <span>↑ 6.5%</span>
+                    <span style="color: #64748b;">vs last week</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">FTC MRR</div>
+                <div class="metric-value" id="ftc-mrr">$2,450</div>
+                <div class="metric-subvalue">
+                    From new conversions
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Funnel -->
+        <div class="chart-card">
+            <div class="chart-title">📈 Conversion Funnel (Yesterday)</div>
+            <div class="funnel">
+                <div class="funnel-stage">
+                    <span class="funnel-stage-label">1. Signups</span>
+                    <span class="funnel-stage-value">1,234</span>
+                </div>
+                <div class="funnel-stage">
+                    <span class="funnel-stage-label">2. Onboarding Completed (80%)</span>
+                    <span class="funnel-stage-value">987</span>
+                </div>
+                <div class="funnel-stage">
+                    <span class="funnel-stage-label">3. First Site Created (66%)</span>
+                    <span class="funnel-stage-value">654</span>
+                </div>
+                <div class="funnel-stage">
+                    <span class="funnel-stage-label">4. FTC 7-day (5.8%)</span>
+                    <span class="funnel-stage-value">38</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQL Query Reference -->
+        <div class="chart-card">
+            <div class="chart-title">💻 SQL Query for Yesterday's Data</div>
+            <p style="color: #64748b; margin-bottom: 12px; font-size: 14px;">
+                Run this query in Snowflake or via MCP to get live data:
+            </p>
+            <div class="sql-query">
+SELECT
+    date_day,
+    sign_ups AS total_signups,
+    sign_ups_paid,
+    sign_ups_organic,
+    ROUND(sign_ups_paid::FLOAT / NULLIF(sign_ups, 0) * 100, 1) AS pct_paid,
+    ROUND(sign_ups_organic::FLOAT / NULLIF(sign_ups, 0) * 100, 1) AS pct_organic,
+    sign_ups_completed_onboarding_survey AS completed_onboarding,
+    users_created_first_site,
+    first_user_conversions AS total_ftc,
+    first_user_conversions_7_days AS ftc_7d,
+    first_user_conversions_30_days AS ftc_30d,
+    mrr_from_ftc_purchase_unb AS ftc_mrr_total
+FROM analytics.webflow.report__kpi_daily
+WHERE date_day = CURRENT_DATE - 1
+ORDER BY date_day DESC;
+            </div>
+        </div>
+
+        <!-- Week-over-Week Comparison -->
+        <div class="chart-card">
+            <div class="chart-title">📊 Week-over-Week Comparison</div>
+            <div class="placeholder">
+                <p>Run WoW comparison query to populate this section</p>
+                <p style="margin-top: 8px; font-size: 14px;">See Query 3 in core-business-health.sql</p>
+            </div>
+        </div>
+
+        <!-- 30-Day Trend -->
+        <div class="chart-card">
+            <div class="chart-title">📈 30-Day Trend</div>
+            <div class="placeholder">
+                <p>Run 30-day trend query and visualize with Chart.js or D3.js</p>
+                <p style="margin-top: 8px; font-size: 14px;">See Query 4 in core-business-health.sql</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+
+        // Set default date to yesterday
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        document.getElementById('target-date').value = yesterday.toISOString().split('T')[0];
+
+        // Format numbers with commas
+        function formatNumber(num) {
+            if (!num) return '0';
+            return Math.round(num).toLocaleString();
+        }
+
+        // Format currency
+        function formatCurrency(num) {
+            if (!num) return '$0';
+            return '$' + Math.round(num).toLocaleString();
+        }
+
+        // Format percentage
+        function formatPercent(num) {
+            if (!num) return '0%';
+            return Math.round(num) + '%';
+        }
+
+        // Update connection status
+        function updateStatus(message, isError = false) {
+            const statusEl = document.getElementById('connection-status');
+            const banner = document.getElementById('status-banner');
+
+            if (statusEl) {
+                statusEl.textContent = message;
+                if (isError) {
+                    banner.style.background = '#fee';
+                    banner.style.borderColor = '#fcc';
+                } else {
+                    banner.style.background = '#eff6ff';
+                    banner.style.borderColor = '#bfdbfe';
+                }
+            }
+        }
+
+        // Update metrics on the page
+        function updateMetrics(data) {
+            if (!data || data.length === 0) {
+                updateStatus('No data found for this date', true);
+                return;
+            }
+
+            const row = data[0];
+
+            // Update top metrics
+            document.getElementById('total-signups').textContent = formatNumber(row.TOTAL_SIGNUPS);
+            document.getElementById('first-sites').textContent = formatNumber(row.USERS_CREATED_FIRST_SITE);
+            document.getElementById('ftc-total').textContent = formatNumber(row.TOTAL_FTC);
+            document.getElementById('ftc-mrr').textContent = formatCurrency(row.FTC_MRR_TOTAL);
+
+            // Update attribution split
+            const paidEl = document.querySelector('.attribution-item:nth-child(1) .attribution-item-value');
+            const paidPctEl = document.querySelector('.attribution-item:nth-child(1) .attribution-item-pct');
+            const organicEl = document.querySelector('.attribution-item:nth-child(2) .attribution-item-value');
+            const organicPctEl = document.querySelector('.attribution-item:nth-child(2) .attribution-item-pct');
+
+            if (paidEl) paidEl.textContent = formatNumber(row.SIGN_UPS_PAID);
+            if (paidPctEl) paidPctEl.textContent = formatPercent(row.PCT_PAID);
+            if (organicEl) organicEl.textContent = formatNumber(row.SIGN_UPS_ORGANIC);
+            if (organicPctEl) organicPctEl.textContent = formatPercent(row.PCT_ORGANIC);
+
+            // Update first site conversion rate
+            const conversionRate = (row.USERS_CREATED_FIRST_SITE / row.TOTAL_SIGNUPS * 100).toFixed(0);
+            const firstSitesSubvalue = document.querySelector('#first-sites').nextElementSibling;
+            if (firstSitesSubvalue) {
+                firstSitesSubvalue.textContent = `${conversionRate}% of signups`;
+            }
+
+            // Update FTC subvalue
+            const ftcSubvalue = document.querySelector('#ftc-total').nextElementSibling;
+            if (ftcSubvalue) {
+                ftcSubvalue.textContent = `7-day: ${formatNumber(row.FTC_7D)} | 30-day: ${formatNumber(row.FTC_30D)}`;
+            }
+
+            // Update funnel
+            const funnelSignups = document.querySelector('.funnel-stage:nth-child(1) .funnel-stage-value');
+            const funnelOnboarding = document.querySelector('.funnel-stage:nth-child(2) .funnel-stage-value');
+            const funnelFirstSite = document.querySelector('.funnel-stage:nth-child(3) .funnel-stage-value');
+            const funnelFTC = document.querySelector('.funnel-stage:nth-child(4) .funnel-stage-value');
+
+            if (funnelSignups) funnelSignups.textContent = formatNumber(row.TOTAL_SIGNUPS);
+            if (funnelOnboarding) {
+                funnelOnboarding.textContent = formatNumber(row.COMPLETED_ONBOARDING);
+                const pct = (row.COMPLETED_ONBOARDING / row.TOTAL_SIGNUPS * 100).toFixed(0);
+                document.querySelector('.funnel-stage:nth-child(2) .funnel-stage-label').textContent = `2. Onboarding Completed (${pct}%)`;
+            }
+            if (funnelFirstSite) {
+                funnelFirstSite.textContent = formatNumber(row.USERS_CREATED_FIRST_SITE);
+                const pct = (row.USERS_CREATED_FIRST_SITE / row.TOTAL_SIGNUPS * 100).toFixed(0);
+                document.querySelector('.funnel-stage:nth-child(3) .funnel-stage-label').textContent = `3. First Site Created (${pct}%)`;
+            }
+            if (funnelFTC) {
+                funnelFTC.textContent = formatNumber(row.FTC_7D);
+                const pct = (row.FTC_7D / row.TOTAL_SIGNUPS * 100).toFixed(1);
+                document.querySelector('.funnel-stage:nth-child(4) .funnel-stage-label').textContent = `4. FTC 7-day (${pct}%)`;
+            }
+
+            updateStatus(`✓ Data loaded successfully for ${row.DATE_DAY}`);
+        }
+
+        // Fetch data for yesterday (default)
+        async function fetchYesterdayData() {
+            try {
+                updateStatus('Loading yesterday\'s data...');
+                const response = await fetch(`${API_BASE}/metrics/yesterday`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    updateMetrics(result.data);
+                    await fetchWoWComparison();
+                } else {
+                    updateStatus('Error: ' + (result.error || 'No data returned'), true);
+                }
+            } catch (error) {
+                updateStatus('Error connecting to backend server: ' + error.message, true);
+                console.error('Fetch error:', error);
+            }
+        }
+
+        // Fetch data for specific date
+        async function fetchDataForDate() {
+            try {
+                const date = document.getElementById('target-date').value;
+                updateStatus(`Loading data for ${date}...`);
+
+                const response = await fetch(`${API_BASE}/metrics/date`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date })
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    updateMetrics(result.data);
+                } else {
+                    updateStatus('Error: ' + (result.error || 'No data returned'), true);
+                }
+            } catch (error) {
+                updateStatus('Error connecting to backend server: ' + error.message, true);
+                console.error('Fetch error:', error);
+            }
+        }
+
+        // Fetch week-over-week comparison
+        async function fetchWoWComparison() {
+            try {
+                const response = await fetch(`${API_BASE}/metrics/wow`);
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.length > 0) {
+                    const row = result.data[0];
+
+                    // Update the change indicators
+                    updateChangeIndicator('#total-signups', row.SIGNUPS_CHANGE_PCT);
+                    updateChangeIndicator('#first-sites', row.FIRST_SITES_CHANGE_PCT);
+                    updateChangeIndicator('#ftc-total', row.FTC_CHANGE_PCT);
+                }
+            } catch (error) {
+                console.error('WoW comparison error:', error);
+            }
+        }
+
+        // Update change indicator for a metric
+        function updateChangeIndicator(metricId, changePct) {
+            const metricEl = document.querySelector(metricId);
+            if (!metricEl) return;
+
+            const changeEl = metricEl.parentElement.querySelector('.metric-change');
+            if (!changeEl) return;
+
+            const isPositive = changePct >= 0;
+            changeEl.className = 'metric-change ' + (isPositive ? 'positive' : 'negative');
+            const arrow = isPositive ? '↑' : '↓';
+            const pct = Math.abs(changePct).toFixed(1);
+            changeEl.innerHTML = `<span>${arrow} ${pct}%</span><span style="color: #64748b;">vs last week</span>`;
+        }
+
+        // Load data on page load
+        window.addEventListener('load', () => {
+            fetchYesterdayData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Snowflake MCP Server Configuration
+# This config enables SQL execution for the dashboard
+
+# SQL execution tool - allows running queries via MCP
+sql_execution:
+  enabled: true
+  # Allow SELECT queries only for safety
+  allowed_operations:
+    - SELECT
+    - SHOW
+    - DESCRIBE
+
+# Optional: Configure specific tools you want to enable
+# tools:
+#   - name: execute_sql
+#     description: Execute SQL queries against Snowflake

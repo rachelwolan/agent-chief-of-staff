@@ -20,12 +20,12 @@ npm run dev
 ### Agent Manager
 ```bash
 # Start the web interface
-cd agent-manager
+cd apps/agent-manager
 npm start
 # Open: http://localhost:3000
 
 # Quick launch script
-./launch-manager.sh
+./tooling/scripts/launch-manager.sh
 ```
 
 ---
@@ -35,8 +35,11 @@ npm start
 /agent-chief-of-staff
 ├── /agents              # Agent definitions (.md files)
 │   └── /resources       # Documentation and guides
-├── /agent-manager       # Web interface application
-├── /src                 # TypeScript source code
+├── /apps/agent-manager  # Web interface application
+├── /apps/start-slack-bot.ts
+├── /packages/core/src   # TypeScript source code
+├── /packages/core/tests # Tests
+├── /tooling/scripts     # Helper scripts
 ├── /dist                # Compiled JavaScript
 ├── /logs                # Execution logs and outputs
 ├── .env                 # API keys (create from .env.example)
@@ -85,6 +88,41 @@ ANTHROPIC_API_KEY=sk-ant-api...
 | **podcast-prep** | ✅ Ready | Interview prep | `podcast`, `host`, `topics[]` |
 
 *Requires Google Calendar setup
+
+---
+
+## 📅 Calendar Commands
+
+```bash
+npm run calendar:today      # Today's schedule
+npm run calendar:week       # Week view
+npm run calendar:upcoming   # Upcoming events
+npm run calendar:auth       # Re-authenticate with Google
+```
+
+---
+
+## ❄️ Snowflake Commands
+
+Quick access to Webflow metrics from Snowflake:
+
+```bash
+# Get signup metrics
+npm run snowflake signups                  # Yesterday's signups (default)
+npm run snowflake signups 2025-10-14       # Signups for specific date
+
+# View trends
+npm run snowflake trend                    # Last 7 days signup trend
+
+# Custom queries
+npm run snowflake query "SELECT * FROM analytics.webflow.report__kpi_daily LIMIT 5"
+```
+
+**Configuration:**
+- Warehouse: `SNOWFLAKE_REPORTING_WH_4`
+- Database: `ANALYTICS`
+- Schema: `WEBFLOW`
+- Authentication: External browser (SSO)
 
 ---
 
@@ -179,7 +217,7 @@ ls -la logs/
 ```
 
 ### 3. View Outputs
-1. Start manager: `cd agent-manager && npm start`
+1. Start manager: `cd apps/agent-manager && npm start`
 2. Open browser: http://localhost:3000
 3. Click "View Output →" on any file
 

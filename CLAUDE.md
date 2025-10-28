@@ -9,11 +9,20 @@ AI-powered Chief of Staff system using Claude 3.5 Sonnet for executive support t
 npm run dev              # Hot reload with tsx
 npm run build           # Compile TypeScript
 
+# Email Response Drafter (AI-powered email triage)
+npm run email:auth       # Setup Gmail OAuth (one-time)
+npm run email:draft      # Draft responses for unread emails
+
 # Dossier (analyze newsletters with Claude Sonnet 4.5)
 npm run dossier:generate    # Generate from Gmail newsletters
 
 # Calendar
 npm run calendar:today      # Today's schedule
+
+# Snowflake Metrics
+npm run snowflake signups           # Yesterday's signups
+npm run snowflake signups 2025-10-14  # Specific date
+npm run snowflake trend             # 7-day signup trend
 
 # Web Dashboard
 cd apps/agent-manager && node server.js    # Start on localhost:3000

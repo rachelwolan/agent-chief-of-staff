@@ -40,8 +40,8 @@ async function connect(): Promise<void> {
   const account = process.env.SNOWFLAKE_ACCOUNT;
   const username = process.env.SNOWFLAKE_USER;
   const database = process.env.SNOWFLAKE_DATABASE;
-  const schema = process.env.SNOWFLAKE_SCHEMA || 'PUBLIC';
-  const warehouse = process.env.SNOWFLAKE_WAREHOUSE;
+  const schema = process.env.SNOWFLAKE_SCHEMA || 'WEBFLOW';
+  const warehouse = process.env.SNOWFLAKE_WAREHOUSE || 'SNOWFLAKE_REPORTING_WH_4';
   const authenticator = process.env.SNOWFLAKE_AUTHENTICATOR || 'externalbrowser';
 
   if (!account || !username) {
@@ -58,7 +58,7 @@ async function connect(): Promise<void> {
       authenticator,
     });
 
-    connection.connect((err: Error, conn: any) => {
+    connection.connectAsync((err: Error, conn: any) => {
       if (err) {
         console.error('Failed to connect to Snowflake:', err);
         connection = null;
@@ -158,15 +158,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (name === 'snowflake_get_signups') {
       const date = args.date as string | undefined;
       const dateCondition = date
-        ? `DATE(created_at_utc) = '${date}'`
-        : `DATE(created_at_utc) = CURRENT_DATE() - 1`;
+        ? `date_day = '${date}'`
+        : `date_day = CURRENT_DATE - 1`;
 
       const query = `
-        SELECT COUNT(*) as signups_count
-        FROM ANALYTICS.PRODUCT.DIM_USER
-        WHERE ${dateCondition}
-          AND _fivetran_deleted = FALSE
-          AND is_spam = FALSE
+        SELECT
+            date_day,
+            sign_ups AS total_signups,
+            sign_ups_paid AS signups_paid,
+            sign_ups_organic AS signups_organic,
+            ROUND(sign_ups_paid::FLOAT / NULLIF(sign_ups, 0) * 100, 1) AS pct_paid,
+            ROUND(sign_ups_organic::FLOAT / NULLIF(sign_ups, 0) * 100, 1) AS pct_organic
+        FROM
+            analytics.webflow.report__kpi_daily
+        WHERE
+            ${dateCondition}
+        ORDER BY
+            date_day DESC
       `;
 
       const rows = await executeQuery(query);

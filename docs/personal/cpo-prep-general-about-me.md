@@ -243,7 +243,7 @@ Rachel Wolan - Chief Product Officer candidate with 20+ years building and scali
 - **POP**: Patience, Optimism, Persistence
 - Focus mindset on present to be world class
 - Do not pray for an easy life, pray for strength to endure a difficult one
-- Life is long and life is short - know which philosophy to apply
+- Life is long and life is short - know which philosophy to apply when
 
 ---
 
