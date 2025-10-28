@@ -19,6 +19,8 @@ const config = {
   clientSessionKeepAlive: true,
   // Keep connection alive for 4 hours
   clientSessionKeepAliveHeartbeatFrequency: 3600,
+  // Cache credentials locally to avoid re-authentication across processes
+  clientStoreTemporaryCredential: true,
 };
 
 // Singleton connection - reuse across queries
