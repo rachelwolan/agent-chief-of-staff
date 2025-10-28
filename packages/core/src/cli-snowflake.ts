@@ -136,6 +136,64 @@ async function getWeeklyTrend() {
   });
 }
 
+async function getVisitors(date?: string) {
+  const dateCondition = date
+    ? `date_day = '${date}'`
+    : `date_day = CURRENT_DATE - 1`;
+
+  const query = `
+    SELECT
+        date_day,
+        CASE
+            WHEN dim_channel_category_updated LIKE 'Organic%' THEN 'Organic'
+            WHEN dim_channel_category_updated LIKE 'Paid%' THEN 'Paid'
+            ELSE 'Other'
+        END AS channel_type,
+        SUM(new_visitors) AS new_visitors,
+        SUM(total_visitors) AS total_visitors
+    FROM
+        analytics.webflow.report__daily_marketing_visitors
+    WHERE
+        ${dateCondition}
+    GROUP BY 1, 2
+    ORDER BY channel_type
+  `;
+
+  const rows = await executeQuery(query);
+
+  if (rows.length === 0) {
+    console.log('\nNo visitor data found for the specified date');
+    console.log('Note: Visitor data is only available from Oct 31, 2024 onwards');
+    return;
+  }
+
+  const queryDate = new Date(rows[0].DATE_DAY).toLocaleDateString();
+
+  console.log('\n📊 Visitor Metrics');
+  console.log('==================');
+  console.log(`Date: ${queryDate}\n`);
+
+  let totalNew = 0;
+  let totalAll = 0;
+
+  rows.forEach((row: any) => {
+    const channel = row.CHANNEL_TYPE;
+    const newVis = row.NEW_VISITORS;
+    const totVis = row.TOTAL_VISITORS;
+
+    console.log(`${channel}:`);
+    console.log(`  • New Visitors: ${newVis.toLocaleString()}`);
+    console.log(`  • Total Visitors: ${totVis.toLocaleString()}\n`);
+
+    totalNew += newVis;
+    totalAll += totVis;
+  });
+
+  console.log('Total:');
+  console.log(`  • New Visitors: ${totalNew.toLocaleString()}`);
+  console.log(`  • Total Visitors: ${totalAll.toLocaleString()}`);
+}
+
 async function customQuery(query: string) {
   console.log('\n🔍 Executing custom query...\n');
   const rows = await executeQuery(query);
@@ -154,6 +212,9 @@ async function main() {
       case 'trend':
         await getWeeklyTrend();
         break;
+      case 'visitors':
+        await getVisitors(arg);
+        break;
       case 'query':
         if (!arg) {
           console.error('Error: Please provide a SQL query');
@@ -164,13 +225,16 @@ async function main() {
       default:
         console.log('Snowflake CLI - Quick access to metrics');
         console.log('\nUsage:');
-        console.log('  npm run snowflake signups [date]  - Get signup metrics (default: yesterday)');
-        console.log('  npm run snowflake trend           - Show 7-day signup trend');
-        console.log('  npm run snowflake query "SQL"     - Execute custom SQL query');
+        console.log('  npm run snowflake signups [date]   - Get signup metrics (default: yesterday)');
+        console.log('  npm run snowflake trend            - Show 7-day signup trend');
+        console.log('  npm run snowflake visitors [date]  - Get visitor metrics (default: yesterday)');
+        console.log('  npm run snowflake query "SQL"      - Execute custom SQL query');
         console.log('\nExamples:');
         console.log('  npm run snowflake signups');
         console.log('  npm run snowflake signups 2025-10-14');
         console.log('  npm run snowflake trend');
+        console.log('  npm run snowflake visitors');
+        console.log('  npm run snowflake visitors 2025-10-27');
         process.exit(0);
     }
   } catch (error: any) {
