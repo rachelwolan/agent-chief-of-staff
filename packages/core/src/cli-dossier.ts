@@ -21,6 +21,7 @@ program
   .description('Generate dossier from today\'s newsletter emails')
   .option('-d, --days <number>', 'Number of days back to fetch newsletters', '1')
   .option('-m, --max <number>', 'Maximum number of newsletters to process', '50')
+  .option('-a, --account <type>', 'Gmail account to use: personal or work', 'personal')
   .action(async (options) => {
     const spinner = ora('Initializing...').start();
 
@@ -30,8 +31,14 @@ program
         throw new Error('ANTHROPIC_API_KEY not found in .env file');
       }
 
+      // Validate account type
+      const accountType = options.account.toLowerCase();
+      if (accountType !== 'personal' && accountType !== 'work') {
+        throw new Error('Account type must be either "personal" or "work"');
+      }
+
       // Initialize services
-      const gmailService = new GmailService();
+      const gmailService = new GmailService(accountType as 'personal' | 'work');
       const articleFetcher = new ArticleFetcherService();
       const dossierGenerator = new DossierGeneratorService(process.env.ANTHROPIC_API_KEY);
 
@@ -45,7 +52,40 @@ program
 
       // Fetch newsletters from Gmail
       spinner.text = 'Fetching newsletters from Gmail...';
-      const newsletters = await gmailService.getNewsletters(parseInt(options.max));
+      let newsletters;
+      try {
+        newsletters = await gmailService.getNewsletters(parseInt(options.max));
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('Label "Newsletter" not found')) {
+          spinner.fail('Newsletter label not found');
+          console.log(chalk.yellow('\n⚠️  The "Newsletter" label was not found in your Gmail.'));
+          console.log(chalk.cyan('\nTo fix this:\n'));
+          console.log(chalk.white('1. Go to Gmail in your browser'));
+          console.log(chalk.white('2. Create a new label called "Newsletter"'));
+          console.log(chalk.white('3. Apply this label to your newsletter emails'));
+          console.log(chalk.white('4. Run this command again\n'));
+
+          // Try to show available labels
+          try {
+            const labels = await gmailService.getLabels();
+            const userLabels = labels.filter(l => !l.id.startsWith('Label_') && !['INBOX', 'SENT', 'DRAFT', 'TRASH', 'SPAM', 'UNREAD', 'STARRED', 'IMPORTANT'].includes(l.id));
+            if (userLabels.length > 0) {
+              console.log(chalk.gray('Available labels in your Gmail:'));
+              userLabels.slice(0, 10).forEach(label => {
+                console.log(chalk.gray(`  - ${label.name}`));
+              });
+              if (userLabels.length > 10) {
+                console.log(chalk.gray(`  ... and ${userLabels.length - 10} more`));
+              }
+            }
+          } catch (e) {
+            // Ignore label listing errors
+          }
+
+          process.exit(1);
+        }
+        throw error;
+      }
 
       if (newsletters.length === 0) {
         spinner.warn('No newsletters found with "Newsletter" label from today');
@@ -163,22 +203,29 @@ program
 program
   .command('auth')
   .description('Authenticate with Gmail')
-  .action(async () => {
+  .option('-a, --account <type>', 'Gmail account to use: personal or work', 'personal')
+  .action(async (options) => {
     const spinner = ora('Initializing Gmail authentication...').start();
 
     try {
-      const gmailService = new GmailService();
-      
+      // Validate account type
+      const accountType = options.account.toLowerCase();
+      if (accountType !== 'personal' && accountType !== 'work') {
+        throw new Error('Account type must be either "personal" or "work"');
+      }
+
+      const gmailService = new GmailService(accountType as 'personal' | 'work');
+
       if (gmailService.isAuthenticated()) {
-        spinner.succeed('Already authenticated with Gmail');
-        console.log(chalk.green('\n✅ You are already authenticated with Gmail.'));
+        spinner.succeed(`Already authenticated with ${accountType} Gmail`);
+        console.log(chalk.green(`\n✅ You are already authenticated with ${accountType} Gmail.`));
         process.exit(0);
       }
 
       spinner.stop();
-      
+
       const authUrl = gmailService.getAuthUrl();
-      console.log(chalk.cyan('\n🔐 Gmail Authentication Required\n'));
+      console.log(chalk.cyan(`\n🔐 ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} Gmail Authentication Required\n`));
       console.log(chalk.white('Please visit this URL to authorize access:\n'));
       console.log(chalk.blue(authUrl));
       console.log(chalk.gray('\nAfter authorizing, you will receive a code. Paste it here:'));
@@ -197,8 +244,8 @@ program
         
         try {
           await gmailService.handleAuthCallback(code.trim());
-          authSpinner.succeed('Gmail authentication successful!');
-          console.log(chalk.green('\n✅ You can now run: npm run dossier:generate'));
+          authSpinner.succeed(`${accountType.charAt(0).toUpperCase() + accountType.slice(1)} Gmail authentication successful!`);
+          console.log(chalk.green(`\n✅ You can now run: npm run dossier:generate${accountType === 'work' ? ' --account work' : ''}`));
         } catch (error) {
           authSpinner.fail('Authentication failed');
           console.error(chalk.red('\n❌ Error:', error instanceof Error ? error.message : String(error)));
